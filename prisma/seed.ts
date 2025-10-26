@@ -95,11 +95,12 @@ async function main() {
   ];
 
   for (const taskData of sampleTasks) {
+    const taskId = `task-${taskData.title.toLowerCase().replace(/\s+/g, '-')}`;
     await prisma.task.upsert({
-      where: { id: `task-${taskData.title.toLowerCase().replace(/\s+/g, '-')}` },
+      where: { id: taskId },
       update: {},
       create: {
-        id: `task-${taskData.title.toLowerCase().replace(/\s+/g, '-')}`,
+        id: taskId,
         ...taskData,
       },
     });
