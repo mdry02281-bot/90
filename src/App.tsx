@@ -371,26 +371,63 @@ function Login() {
   })
   const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     
-    if (formData.email && formData.password) {
-      login({
-        id: 'user-' + Date.now(),
-        email: formData.email,
-        username: 'user123',
-        fullName: 'Regular User',
-        role: 'USER',
-        level: 0,
-        isApproved: true,
-        balance: 5.00,
-        dailySpins: 0,
-        lastSpinDate: null
-      })
-      window.location.href = '/dashboard'
-    } else {
+    if (!formData.email || !formData.password) {
       setError('Please fill in all fields')
+      return
+    }
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        // Store tokens
+        if (data.accessToken) {
+          localStorage.setItem('accessToken', data.accessToken)
+        }
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken)
+        }
+        
+        // Login with user data
+        login({
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.username,
+          fullName: data.user.fullName,
+          role: data.user.role,
+          level: data.user.level || 0,
+          isApproved: data.user.isApproved,
+          balance: data.user.wallet?.balance || 0,
+          dailySpins: 0,
+          lastSpinDate: null
+        })
+        
+        // Redirect based on role
+        if (data.user.role === 'SUPER_ADMIN' || data.user.role === 'ADMIN') {
+          window.location.href = '/admin'
+        } else {
+          window.location.href = '/dashboard'
+        }
+      } else {
+        setError(data.error || 'Login failed')
+      }
+    } catch (err) {
+      setError('Failed to connect to server')
     }
   }
 
