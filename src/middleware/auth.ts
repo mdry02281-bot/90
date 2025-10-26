@@ -49,7 +49,8 @@ export const authMiddleware = async (
       return res.status(403).json({ error: 'Account suspended' });
     }
 
-    if (!user.isApproved) {
+    // Only require approval for regular users, not admins
+    if (!user.isApproved && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
       return res.status(403).json({ error: 'Account not approved' });
     }
 
@@ -70,6 +71,7 @@ export const adminMiddleware = (
     return res.status(401).json({ error: 'Authentication required' });
   }
 
+  // Check if user is admin or super admin
   if (req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN') {
     return res.status(403).json({ error: 'Admin access required' });
   }
