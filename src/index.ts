@@ -53,14 +53,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Serve static files if they exist
-if (process.env.NODE_ENV === 'production') {
-  const staticPath = path.join(__dirname, '../../dist');
-  if (require('fs').existsSync(staticPath)) {
-    app.use(express.static(staticPath));
-  }
-}
-
 // Health check
 app.get('/health', (req, res) => {
   res.json({ 
@@ -79,10 +71,33 @@ app.use('/api/withdrawals', authMiddleware, withdrawalsRoutes);
 app.use('/api/admin', authMiddleware, adminRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 
-// 404 handler for non-API routes
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Not Found' });
-});
+// Serve static files if they exist
+if (process.env.NODE_ENV === 'production') {
+  const staticPath = path.join(__dirname, '../dist');
+  if (require('fs').existsSync(staticPath)) {
+    app.use(express.static(staticPath));
+    
+    // Serve React app for all non-API routes
+    app.get('*', (req, res) => {
+      const indexPath = path.join(staticPath, 'index.html');
+      if (require('fs').existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(404).json({ error: 'Frontend not found' });
+      }
+    });
+  } else {
+    // If dist folder doesn't exist, return 404 for non-API routes
+    app.use('*', (req, res) => {
+      res.status(404).json({ error: 'Not Found' });
+    });
+  }
+} else {
+  // In development, just return 404 for non-API routes
+  app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Not Found' });
+  });
+}
 
 // Error handling
 app.use(errorHandler);
