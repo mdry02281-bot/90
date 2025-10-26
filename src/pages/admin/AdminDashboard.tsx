@@ -184,6 +184,18 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  fetchDashboardStats();
+                  fetchPendingUsers();
+                  toast.success('Data refreshed');
+                }}
+              >
+                <Activity className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
               <Badge variant="secondary" className="bg-brand-gradient text-white">
                 <Crown className="h-3 w-3 mr-1" />
                 Admin Panel
@@ -359,7 +371,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-scale-in">
+        <Tabs value={activeTab} onValueChange={(value) => {
+          console.log('Tab changed to:', value);
+          setActiveTab(value);
+        }} className="animate-scale-in">
           <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="overview" className="hover-glow">
               <BarChart3 className="h-4 w-4 mr-2" />
