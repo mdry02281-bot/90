@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import { logger } from '../utils/logger';
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.hostinger.com',
   port: parseInt(process.env.SMTP_PORT || '465'),
   secure: process.env.SMTP_SECURE !== 'false', // SSL/TLS enabled by default
