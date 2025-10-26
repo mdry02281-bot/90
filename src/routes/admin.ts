@@ -986,6 +986,48 @@ router.put('/settings', asyncHandler(async (req: AuthenticatedRequest, res) => {
   });
 }));
 
+// Get dashboard summary
+router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, res) => {
+  const [
+    totalUsers,
+    pendingUsers,
+    approvedUsers,
+    totalTasks,
+    activeTasks,
+    pendingWithdrawals,
+    totalWithdrawals,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { isApproved: false } }),
+    prisma.user.count({ where: { isApproved: true } }),
+    prisma.task.count(),
+    prisma.task.count({ where: { status: 'ACTIVE' } }),
+    prisma.withdrawal.count({ where: { status: 'PENDING' } }),
+    prisma.withdrawal.count(),
+  ]);
+
+  res.json({
+    success: true,
+    users: {
+      total: totalUsers,
+      pending: pendingUsers,
+      approved: approvedUsers,
+    },
+    tasks: {
+      total: totalTasks,
+      active: activeTasks,
+    },
+    withdrawals: {
+      total: totalWithdrawals,
+      pending: pendingWithdrawals,
+    },
+    revenue: {
+      total: 0, // Calculate total revenue if needed
+    },
+    recentActivity: [],
+  });
+}));
+
 // Get analytics data
 router.get('/analytics', asyncHandler(async (req: AuthenticatedRequest, res) => {
   const days = parseInt(req.query.days as string) || 7;
