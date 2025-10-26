@@ -321,7 +321,7 @@ function Home() {
                 🎰
               </div>
               <h3 className="text-xl font-semibold mb-3">Luck Wheel</h3>
-              <p className="text-gray-600">Spin the wheel daily and win up to $0.30 per spin</p>
+              <p className="text-gray-600">Spin the wheel daily and win rewards</p>
             </div>
             
             <div className="stats-card animate-float delay-400">
@@ -1025,7 +1025,7 @@ function Dashboard() {
                 <span className="text-2xl">🎰</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">Luck Wheel</h3>
-              <p className="text-gray-600 mb-4">Spin daily and win up to $0.30</p>
+              <p className="text-gray-600 mb-4">Spin daily and win rewards</p>
               <a href="/luck-wheel" className="btn-success w-full">
                 Spin Now
               </a>
@@ -1156,7 +1156,7 @@ function LuckWheel() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4 animate-pulse">🎰 Luck Wheel</h1>
-          <p className="text-xl text-white opacity-90">Spin daily and win up to $0.30!</p>
+          <p className="text-xl text-white opacity-90">Spin daily and win rewards!</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
