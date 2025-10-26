@@ -37,11 +37,6 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8),
 });
 
-// Generate unique referral code
-const generateReferralCode = (): string => {
-  return crypto.randomBytes(6).toString('hex').toUpperCase();
-};
-
 // Register new user
 router.post('/register', asyncHandler(async (req, res) => {
   const data = registerSchema.parse(req.body);
@@ -65,18 +60,6 @@ router.post('/register', asyncHandler(async (req, res) => {
   // Hash password
   const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
 
-  // Generate unique referral code
-  let referralCode = generateReferralCode();
-  let attempts = 0;
-  while (attempts < 10) {
-    const existing = await prisma.user.findUnique({
-      where: { referralCode },
-    });
-    if (!existing) break;
-    referralCode = generateReferralCode();
-    attempts++;
-  }
-
   // Create user
   const user = await prisma.user.create({
     data: {
@@ -86,7 +69,6 @@ router.post('/register', asyncHandler(async (req, res) => {
       fullName: data.fullName,
       gender: data.gender,
       birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
-      referralCode,
       isApproved: false,
       role: 'USER',
       level: 0,
@@ -107,7 +89,7 @@ router.post('/register', asyncHandler(async (req, res) => {
   // Handle referral if exists
   if (data.referredBy) {
     const referrer = await prisma.user.findUnique({
-      where: { referralCode: data.referredBy },
+      where: { id: data.referredBy },
     });
 
     if (referrer) {
