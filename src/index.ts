@@ -23,6 +23,9 @@ import webhooksRoutes from './routes/webhooks';
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Trust proxy for Nginx
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
