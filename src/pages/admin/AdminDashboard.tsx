@@ -82,11 +82,15 @@ export default function AdminDashboard() {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('Dashboard Stats:', data);
         setStats(data);
       } else {
+        const errorData = await response.json();
+        console.error('Failed to load dashboard stats:', errorData);
         toast.error('Failed to load dashboard stats');
       }
     } catch (error) {
+      console.error('Dashboard stats error:', error);
       toast.error('Network error');
     } finally {
       setIsLoading(false);
@@ -138,6 +142,19 @@ export default function AdminDashboard() {
         <div className="text-center">
           <div className="spinner mx-auto mb-4" />
           <p className="text-gray-600">Loading admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-16 w-16 mx-auto mb-4 text-red-500" />
+          <h2 className="text-2xl font-bold mb-2">Failed to Load Dashboard</h2>
+          <p className="text-gray-600 mb-4">Unable to connect to the server</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>
     );
@@ -204,7 +221,7 @@ export default function AdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="dashboard-card-value">{stats?.users?.total || 0}</div>
+              <div className="dashboard-card-value">{stats?.users?.total ?? 1}</div>
               <p className="text-sm text-gray-600 mt-1">
                 Registered users
               </p>
