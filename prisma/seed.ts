@@ -22,7 +22,6 @@ async function main() {
       role: 'SUPER_ADMIN',
       level: 3,
       isApproved: true,
-      referralCode: 'ADMIN001',
     },
   });
 
