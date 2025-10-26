@@ -81,8 +81,18 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
+      const accessToken = localStorage.getItem('accessToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
       const response = await fetch('/api/admin/dashboard', {
         credentials: 'include',
+        headers,
       });
       if (response.ok) {
         const data = await response.json();
@@ -108,8 +118,18 @@ export default function AdminDashboard() {
     setUsersLoading(true);
     try {
       console.log('Fetching pending users...');
+      const accessToken = localStorage.getItem('accessToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
       const response = await fetch('/api/admin/users?status=pending', {
         credentials: 'include',
+        headers,
       });
       console.log('Pending users response status:', response.status);
       
@@ -140,9 +160,19 @@ export default function AdminDashboard() {
   const handleApproveUser = async (userId: string) => {
     try {
       console.log('Approving user:', userId);
+      const accessToken = localStorage.getItem('accessToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      
       const response = await fetch(`/api/admin/users/${userId}/approve`, {
         method: 'POST',
         credentials: 'include',
+        headers,
       });
 
       console.log('Approve response status:', response.status);

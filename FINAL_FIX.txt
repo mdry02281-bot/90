@@ -1,0 +1,36 @@
+cd /root/55
+
+# امسح PM2 تماماً
+pm2 delete all
+pm2 kill
+
+# امسح Prisma cache
+rm -rf node_modules/.prisma
+npx prisma generate
+
+# أعد البناء والتشغيل
+npm run build
+pm2 start dist/index.js --name promohive
+
+sleep 8
+
+# افحص السجلات
+pm2 logs promohive --lines 5
+
+# اختبر الاتصال
+node -e "
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+prisma.user.count().then(count => {
+  console.log('Total users:', count);
+  return prisma.user.findMany({ where: { isApproved: false } });
+}).then(users => {
+  console.log('Pending users:', users.length);
+  console.log('Pending usernames:', users.map(u => u.username));
+  process.exit(0);
+}).catch(err => {
+  console.error('Error:', err.message);
+  process.exit(1);
+});
+"
+

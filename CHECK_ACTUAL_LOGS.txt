@@ -1,0 +1,10 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# اطبع آخر 50 سطر من السجلات
+tail -50 /root/.pm2/logs/promohive-out.log
+
+# تحقق من محاولات الوصول للـ API
+tail -50 /root/.pm2/logs/promohive-error.log | grep -i "api\|dashboard\|users" || tail -50 /root/.pm2/logs/promohive-error.log
+

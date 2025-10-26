@@ -1,0 +1,9 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# تحقق من admin accounts
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.user.findMany().then(users => { console.log('=== All Users ==='); users.forEach(u => console.log('Email:', u.email, '| Role:', u.role, '| isApproved:', u.isApproved, '| Level:', u.level)); prisma.\$disconnect(); }).catch(e => { console.error('Error:', e.message); prisma.\$disconnect(); });"
+
+# ثم أعد تشغيل السيرفر
+pm2 restart promohive

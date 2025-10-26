@@ -1,0 +1,20 @@
+# على السيرفر نفذ:
+
+ssh root@srv1052990
+
+cd /root/55
+
+# 1. اطبع DATABASE_URL من .env
+echo "=== Current DATABASE_URL ==="
+grep DATABASE_URL .env
+
+# 2. اختبر Prisma يقرأ .env صح
+node -e "require('dotenv').config(); console.log('DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 80));"
+
+# 3. اختبر اتصال Prisma بالداتابيس مباشرة
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.user.count().then(c => { console.log('✅ Total users:', c); prisma.$disconnect(); }).catch(e => { console.error('❌ Error:', e.message); prisma.$disconnect(); });"
+
+# 4. اطبع PM2 environment variables
+echo ""
+echo "=== PM2 Environment Variables ==="
+pm2 env 0

@@ -1,0 +1,9 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# تحقق من حساب admin
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.user.findMany({ where: { email: 'admin@promohive.com' } }).then(users => { console.log('Admin accounts:'); users.forEach(u => console.log('Email:', u.email, '| Role:', u.role, '| isApproved:', u.isApproved, '| isSuspended:', u.isSuspended)); prisma.\$disconnect(); }).catch(e => { console.error('Error:', e.message); prisma.\$disconnect(); });"
+
+# إنشاء/تحديث admin account إذا لم يكن موجود
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.user.upsert({ where: { email: 'admin@promohive.com' }, update: { role: 'SUPER_ADMIN', isApproved: true, isSuspended: false }, create: { email: 'admin@promohive.com', username: 'admin', fullName: 'Super Administrator', role: 'SUPER_ADMIN', isApproved: true, isSuspended: false, password: '\$2b\$12\$dummy' } }).then(user => { console.log('✅ Admin account updated:', user.email, '| Role:', user.role, '| Approved:', user.isApproved); prisma.\$disconnect(); }).catch(e => { console.error('❌ Error:', e.message); prisma.\$disconnect(); });"

@@ -1,0 +1,24 @@
+cd /root/55
+
+# اختبر الاتصال بقاعدة البيانات
+node -e "
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+prisma.user.count()
+  .then(count => {
+    console.log('✅ Total users:', count);
+    return prisma.user.findMany({ where: { isApproved: false } });
+  })
+  .then(users => {
+    console.log('✅ Pending users:', users.length);
+    users.forEach(u => console.log('  -', u.username, u.email));
+  })
+  .catch(err => {
+    console.error('❌ Error:', err.message);
+  })
+  .finally(() => {
+    process.exit(0);
+  });
+"
+

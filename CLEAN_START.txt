@@ -1,0 +1,22 @@
+# إعادة تشغيل نظيفة
+
+cd /root/55
+
+# 1. امسح جميع العمليات
+pm2 delete all
+
+# 2. امسح جميع السجلات القديمة
+pm2 flush
+
+# 3. أعد البناء
+npm run build
+
+# 4. ابدأ السيرفر من جديد
+pm2 start dist/index.js --name promohive
+
+# 5. انتظر قليلاً
+sleep 5
+
+# 6. افحص السجلات الجديدة فقط (بدون --lines)
+pm2 logs promohive --nostream
+

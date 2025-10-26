@@ -1,0 +1,6 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# راقب الطلبات الحية
+pm2 logs promohive --lines 100 | tail -20

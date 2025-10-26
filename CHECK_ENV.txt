@@ -1,0 +1,14 @@
+# على السيرفر نفذ هذا للتحقق:
+
+cd /root/55
+
+# اطبع كامل ملف .env
+cat .env | grep DATABASE_URL
+
+echo ""
+echo "Testing direct connection to Supabase..."
+echo ""
+
+# جرب اتصال مباشر
+npx prisma db pull --schema prisma/schema.prisma 2>&1 | head -20
+

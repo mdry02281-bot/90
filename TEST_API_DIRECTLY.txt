@@ -1,0 +1,9 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# 1. اختبر endpoint dashboard بدون auth (لنيكشف الخطأ)
+curl -X GET http://localhost:3002/api/admin/dashboard 2>&1
+
+# 2. شف logs مباشرة
+pm2 logs promohive --lines 5 --nostream

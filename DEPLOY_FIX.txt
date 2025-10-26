@@ -1,0 +1,21 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# 1. احذف الملفات القديمة
+rm -rf node_modules/.cache dist build
+
+# 2. امسح PM2 logs
+pm2 flush
+
+# 3. بنّي التطبيق
+npm run build
+
+# 4. أعد تشغيل PM2
+pm2 restart promohive
+
+# 5. انتظر 5 ثوانٍ
+sleep 5
+
+# 6. اطبع آخر logs
+pm2 logs promohive --lines 20

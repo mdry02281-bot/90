@@ -1,0 +1,39 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+cat > .env << 'ENVEOF'
+DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:2cUQcWvZf9qJ2nt6@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&prepared_statements=false"
+SUPABASE_URL="https://jxtutquvxmkrajfvdbab.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHV0cXV2eG1rcmFqZnZkYmFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NDA5MjcsImV4cCI6MjA3NzAxNjkyN30.jLMQWJqwj6Amja-bsBmLwZjmTHgusL_1q2n_ZThbRrM"
+JWT_SECRET="promohive-super-secret-jwt-key-2024"
+JWT_REFRESH_SECRET="promohive-super-secret-refresh-key-2024"
+PORT=3002
+NODE_ENV="production"
+HOST="0.0.0.0"
+ENVEOF
+
+rm -rf node_modules/.prisma
+npx prisma generate
+
+echo "Testing connection..."
+node -e "
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+prisma.\$connect().then(() => {
+  return prisma.user.count();
+}).then(count => {
+  console.log('✅ Total users:', count);
+  return prisma.user.findMany({ where: { isApproved: false } });
+}).then(users => {
+  console.log('✅ Pending users:', users.length);
+  process.exit(0);
+}).catch(err => {
+  console.error('❌ Error:', err.message);
+  process.exit(1);
+});
+"
+
+npm run build
+pm2 start dist/index.js --name promohive
+

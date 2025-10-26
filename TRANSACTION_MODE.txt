@@ -1,0 +1,23 @@
+# على السيرفر نفذ - استخدم Transaction Mode:
+
+cd /root/55
+
+cat > .env << 'ENVEOF'
+DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:2cUQcWvZf9qJ2nt6@aws-0-us-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+SUPABASE_URL="https://jxtutquvxmkrajfvdbab.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHV0cXV2eG1rcmFqZnZkYmFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NDA5MjcsImV4cCI6MjA3NzAxNjkyN30.jLMQWJqwj6Amja-bsBmLwZjmTHgusL_1q2n_ZThbRrM"
+JWT_SECRET="promohive-super-secret-jwt-key-2024"
+JWT_REFRESH_SECRET="promohive-super-secret-refresh-key-2024"
+PORT=3002
+NODE_ENV="production"
+HOST="0.0.0.0"
+ENVEOF
+
+echo "✅ Using Transaction Mode (port 6543)"
+echo ""
+
+npm run build
+pm2 restart promohive
+sleep 5
+pm2 logs promohive --lines 10
+

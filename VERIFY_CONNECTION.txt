@@ -1,0 +1,20 @@
+# التحقق من الاتصال
+
+cd /root/55
+
+# 1. اطبع محتوى .env للتأكد من password
+echo "Current DATABASE_URL:"
+grep DATABASE_URL .env
+
+# 2. احذف العمليات القديمة من PM2
+pm2 delete all
+
+# 3. أعد تشغيل التطبيق
+npm run build
+pm2 start dist/index.js --name promohive
+pm2 save
+
+# 4. افحص السجلات
+sleep 5
+pm2 logs promohive --lines 20 | grep -E "Database|Connected|Authentication|error|FATAL|🚀"
+

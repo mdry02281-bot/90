@@ -1,0 +1,22 @@
+# قتل كل العمليات القديمة
+
+cd /root/55
+
+# 1. امسح PM2 تماماً
+pm2 delete all
+pm2 kill
+
+# 2. اقتل أي process على port 3002
+lsof -ti:3002 | xargs kill -9 || echo "No process on port 3002"
+
+# 3. ابدأ PM2 من جديد
+pm2 resurrect
+
+# 4. إذا لم يعمل، أعد تشغيل السيرفر نظيف
+npm run build
+pm2 start dist/index.js --name promohive
+
+# 5. انتظر واطبع السجلات الجديدة
+sleep 5
+pm2 logs promohive --nostream --lines 5
+

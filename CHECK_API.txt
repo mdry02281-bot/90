@@ -1,0 +1,14 @@
+# اختبر الـ API مباشرة من السيرفر:
+
+ssh root@srv1052990
+
+cd /root/55
+
+# اختبر API dashboard
+curl -H "Cookie: $(cat ~/.cookie)" http://localhost:3002/api/admin/dashboard
+
+# أو باستخدام JWT token
+curl -H "Authorization: Bearer <TOKEN>" http://localhost:3002/api/admin/dashboard
+
+# أو اطبع آخر logs للطلبات:
+tail -f /root/.pm2/logs/promohive-out.log | grep -i "dashboard\|user\|error"

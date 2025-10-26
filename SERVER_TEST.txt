@@ -1,0 +1,17 @@
+# على السيرفر نفذ:
+
+ssh root@srv1052990
+
+cd /root/55
+
+# اختبر Prisma connection
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.user.findMany({ where: { isApproved: false }, take: 5 }).then(users => { console.log('Pending users count:', users.length); users.forEach(u => console.log('Email:', u.email, '| isApproved:', u.isApproved)); }).catch(e => console.error('Error:', e.message));"
+
+# ثم اختبر API endpoint بدون authentication
+curl -s http://localhost:3002/api/admin/dashboard | head -50
+
+# ثم اختبر مع authentication (استبدل TOKEN بتوكن حقيقي)
+curl -s -H "Authorization: Bearer <TOKEN>" http://localhost:3002/api/admin/dashboard | jq '.'
+
+# أو شف الـ logs مباشرة
+pm2 logs promohive --lines 30 --nostream | grep -E "error|dashboard|user"

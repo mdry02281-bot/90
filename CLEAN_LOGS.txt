@@ -1,0 +1,20 @@
+# على السيرفر نفذ:
+
+cd /root/55
+
+# امسح جميع السجلات القديمة
+pm2 flush promohive
+
+# أعد التشغيل
+pm2 restart promohive
+
+# انتظر 10 ثوانٍ
+sleep 10
+
+# اطبع السجلات الجديدة فقط
+pm2 logs promohive --lines 5 --nostream
+
+# أيضاً اطبع السجلات الجديدة بالكامل
+tail -20 /root/.pm2/logs/promohive-out.log
+tail -20 /root/.pm2/logs/promohive-error.log
+
