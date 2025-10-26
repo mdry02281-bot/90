@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(adminMiddleware);
 
 // Get dashboard stats
-router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const [
     totalUsers,
     pendingUsers,
@@ -21,7 +21,7 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
     totalWithdrawals,
     pendingWithdrawals,
     totalRevenue,
-    recentActivity,
+    recentActions,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { isApproved: false } }),
@@ -46,6 +46,19 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
       },
     }),
   ]);
+
+  // Map admin actions to match frontend expectations
+  const recentActivity = recentActions.map((action) => ({
+    id: action.id,
+    type: action.action,
+    description: action.description,
+    createdAt: action.createdAt,
+    metadata: action.metadata,
+    admin: {
+      username: action.admin?.username || 'Unknown',
+      email: action.admin?.email || 'unknown@promohive.com',
+    },
+  }));
 
   res.json({
     success: true,
@@ -72,7 +85,7 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
 }));
 
 // Get all users with pagination and filters
-router.get('/users', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/users', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const status = req.query.status as string;
@@ -1027,6 +1040,28 @@ router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, 
     return sum + wallet.balance.toNumber();
   }, 0);
 
+  // Fetch recent admin actions to show in Overview -> Recent Activity
+  const recentActions = await prisma.adminAction.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+    include: {
+      admin: {
+        select: {
+          username: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  const recentActivity = recentActions.map((a) => ({
+    id: a.id,
+    type: a.action,
+    description: a.description,
+    createdAt: a.createdAt,
+    admin: a.admin ? { username: a.admin.username, email: a.admin.email } : null,
+  }));
+
   res.json({
     success: true,
     users: {
@@ -1047,7 +1082,7 @@ router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, 
       withdrawn: totalWithdrawn,
       pending: totalBalances,
     },
-    recentActivity: [],
+    recentActivity,
   });
 }));
 
