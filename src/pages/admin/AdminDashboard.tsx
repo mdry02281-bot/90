@@ -212,7 +212,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card className="dashboard-card animate-scale-in hover-lift">
             <CardHeader className="dashboard-card-header">
               <CardTitle className="dashboard-card-title">Total Users</CardTitle>
@@ -269,6 +269,21 @@ export default function AdminDashboard() {
               <div className="dashboard-card-value">{stats?.withdrawals?.pending || 0}</div>
               <p className="text-sm text-gray-600 mt-1">
                 Awaiting review
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.4s' }}>
+            <CardHeader className="dashboard-card-header">
+              <CardTitle className="dashboard-card-title">Total Revenue</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center float-animation">
+                <DollarSign className="h-6 w-6 text-emerald-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="dashboard-card-value">${(stats?.revenue?.total || 0).toFixed(2)}</div>
+              <p className="text-sm text-gray-600 mt-1">
+                Total earnings
               </p>
             </CardContent>
           </Card>

@@ -996,6 +996,7 @@ router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, 
     activeTasks,
     pendingWithdrawals,
     totalWithdrawals,
+    wallets,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { isApproved: false } }),
@@ -1004,7 +1005,27 @@ router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, 
     prisma.task.count({ where: { status: 'ACTIVE' } }),
     prisma.withdrawal.count({ where: { status: 'PENDING' } }),
     prisma.withdrawal.count(),
+    prisma.wallet.findMany({
+      select: {
+        totalEarned: true,
+        totalWithdrawn: true,
+        balance: true,
+      },
+    }),
   ]);
+
+  // Calculate total revenue from all wallets
+  const totalRevenue = wallets.reduce((sum, wallet) => {
+    return sum + wallet.totalEarned.toNumber();
+  }, 0);
+
+  const totalWithdrawn = wallets.reduce((sum, wallet) => {
+    return sum + wallet.totalWithdrawn.toNumber();
+  }, 0);
+
+  const totalBalances = wallets.reduce((sum, wallet) => {
+    return sum + wallet.balance.toNumber();
+  }, 0);
 
   res.json({
     success: true,
@@ -1022,7 +1043,9 @@ router.get('/analytics/summary', asyncHandler(async (req: AuthenticatedRequest, 
       pending: pendingWithdrawals,
     },
     revenue: {
-      total: 0, // Calculate total revenue if needed
+      total: totalRevenue,
+      withdrawn: totalWithdrawn,
+      pending: totalBalances,
     },
     recentActivity: [],
   });
