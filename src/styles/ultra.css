@@ -1,0 +1,511 @@
+/* PromoHive Ultra Advanced Interactive Styles */
+
+/* Quantum Particle System */
+.quantum-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #00d4ff;
+  border-radius: 50%;
+  animation: quantum-float 8s infinite linear;
+}
+
+@keyframes quantum-float {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Holographic Interface */
+.holographic-interface {
+  background: linear-gradient(45deg, 
+    rgba(0, 212, 255, 0.1) 0%, 
+    rgba(255, 0, 128, 0.1) 25%, 
+    rgba(0, 212, 255, 0.1) 50%, 
+    rgba(255, 0, 128, 0.1) 75%, 
+    rgba(0, 212, 255, 0.1) 100%);
+  background-size: 400% 400%;
+  animation: holographic-shift 4s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic-interface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+  animation: holographic-overlay 6s ease infinite;
+}
+
+@keyframes holographic-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes holographic-overlay {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Neural Network Visualization */
+.neural-network {
+  position: relative;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
+}
+
+.neural-node {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #00d4ff;
+  border-radius: 50%;
+  animation: neural-pulse 2s infinite;
+}
+
+.neural-connection {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  animation: neural-flow 3s infinite;
+}
+
+@keyframes neural-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes neural-flow {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+}
+
+/* Cyberpunk Grid */
+.cyberpunk-grid {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: grid-move 10s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
+
+/* Quantum Tunneling Effect */
+.quantum-tunnel {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-tunnel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: conic-gradient(from 0deg, 
+    transparent 0deg, 
+    rgba(0, 212, 255, 0.1) 90deg, 
+    transparent 180deg, 
+    rgba(255, 0, 128, 0.1) 270deg, 
+    transparent 360deg);
+  animation: quantum-rotate 4s linear infinite;
+}
+
+@keyframes quantum-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Holographic Text */
+.holographic-text {
+  background: linear-gradient(45deg, #00d4ff, #ff0080, #00d4ff, #ff0080);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-text 3s ease infinite;
+  text-shadow: 
+    0 0 10px rgba(0, 212, 255, 0.5),
+    0 0 20px rgba(0, 212, 255, 0.3),
+    0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+@keyframes holographic-text {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Quantum Entanglement */
+.quantum-entangled {
+  position: relative;
+}
+
+.quantum-entangled::before,
+.quantum-entangled::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #00d4ff;
+  border-radius: inherit;
+  animation: quantum-entangle 2s infinite;
+}
+
+.quantum-entangled::before {
+  animation-delay: 0s;
+}
+
+.quantum-entangled::after {
+  animation-delay: 1s;
+}
+
+@keyframes quantum-entangle {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Neural Interface */
+.neural-interface {
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+.neural-interface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, transparent 30%, rgba(0, 212, 255, 0.05) 50%, transparent 70%),
+    linear-gradient(-45deg, transparent 30%, rgba(255, 0, 128, 0.05) 50%, transparent 70%);
+  animation: neural-scan 3s ease infinite;
+}
+
+@keyframes neural-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Quantum Field */
+.quantum-field {
+  position: relative;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
+}
+
+.quantum-field::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 30%);
+  animation: quantum-field 4s ease infinite;
+}
+
+@keyframes quantum-field {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Cyberpunk Neon */
+.cyberpunk-neon {
+  color: #00d4ff;
+  text-shadow: 
+    0 0 5px #00d4ff,
+    0 0 10px #00d4ff,
+    0 0 15px #00d4ff,
+    0 0 20px #00d4ff,
+    0 0 35px #00d4ff,
+    0 0 40px #00d4ff;
+  animation: cyberpunk-flicker 2s infinite alternate;
+}
+
+@keyframes cyberpunk-flicker {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px #00d4ff,
+      0 0 10px #00d4ff,
+      0 0 15px #00d4ff,
+      0 0 20px #00d4ff,
+      0 0 35px #00d4ff,
+      0 0 40px #00d4ff;
+  }
+  50% {
+    text-shadow: 
+      0 0 2px #00d4ff,
+      0 0 5px #00d4ff,
+      0 0 8px #00d4ff,
+      0 0 12px #00d4ff,
+      0 0 18px #00d4ff,
+      0 0 22px #00d4ff;
+  }
+}
+
+/* Quantum Glitch */
+.quantum-glitch {
+  position: relative;
+}
+
+.quantum-glitch::before,
+.quantum-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.quantum-glitch::before {
+  animation: quantum-glitch-1 0.5s infinite;
+  color: #ff0080;
+  z-index: -1;
+}
+
+.quantum-glitch::after {
+  animation: quantum-glitch-2 0.5s infinite;
+  color: #00d4ff;
+  z-index: -2;
+}
+
+@keyframes quantum-glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes quantum-glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(2px, 2px);
+  }
+  40% {
+    transform: translate(2px, -2px);
+  }
+  60% {
+    transform: translate(-2px, 2px);
+  }
+  80% {
+    transform: translate(-2px, -2px);
+  }
+}
+
+/* Holographic Projection */
+.holographic-projection {
+  background: 
+    linear-gradient(45deg, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(-45deg, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic-projection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+  animation: holographic-projection 3s ease infinite;
+}
+
+@keyframes holographic-projection {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Quantum Interface */
+.quantum-interface {
+  background: 
+    conic-gradient(from 0deg, 
+      transparent 0deg, 
+      rgba(0, 212, 255, 0.1) 90deg, 
+      transparent 180deg, 
+      rgba(255, 0, 128, 0.1) 270deg, 
+      transparent 360deg);
+  animation: quantum-interface 4s linear infinite;
+}
+
+@keyframes quantum-interface {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark Mode Enhancements */
+.dark .quantum-particles .quantum-particle {
+  background: #00d4ff;
+}
+
+.dark .neural-node {
+  background: #00d4ff;
+}
+
+.dark .neural-connection {
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+}
+
+.dark .cyberpunk-neon {
+  color: #00d4ff;
+  text-shadow: 
+    0 0 5px #00d4ff,
+    0 0 10px #00d4ff,
+    0 0 15px #00d4ff,
+    0 0 20px #00d4ff,
+    0 0 35px #00d4ff,
+    0 0 40px #00d4ff;
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-particle,
+  .neural-node,
+  .neural-connection,
+  .cyberpunk-neon,
+  .quantum-glitch,
+  .holographic-projection,
+  .quantum-interface {
+    animation: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .quantum-particle,
+  .neural-node {
+    background: #000;
+  }
+  
+  .neural-connection {
+    background: #000;
+  }
+  
+  .cyberpunk-neon {
+    text-shadow: none;
+    color: #000;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .quantum-particle,
+  .neural-node,
+  .neural-connection,
+  .cyberpunk-neon,
+  .quantum-glitch,
+  .holographic-projection,
+  .quantum-interface {
+    display: none !important;
+  }
+}

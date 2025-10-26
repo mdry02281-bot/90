@@ -1,0 +1,362 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables */
+:root {
+  --primary-orange: #F97316;
+  --primary-red: #DC2626;
+  --primary-deep-orange: #EA580C;
+  --primary-fire: #FD7E14;
+  --primary-gold: #FFA500;
+  --primary-cyan: #00E5FF;
+  --primary-purple: #9333EA;
+  --primary-pink: #EC4899;
+  --accent-orange: #FB923C;
+  --accent-red: #EF4444;
+  --gradient-start: #00E5FF;
+  --gradient-mid: #9333EA;
+  --gradient-end: #EC4899;
+  --dark-bg: #0F172A;
+  --dark-card: #1E293B;
+  --dark-border: #334155;
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #000000 0%, #1a0d28 50%, #000000 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Fix wallet address text color */
+.font-mono {
+  @apply text-gray-800;
+}
+
+.font-mono.text-sm {
+  @apply text-gray-800;
+  @apply font-semibold;
+}
+
+/* Custom Components */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple), var(--primary-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple), var(--primary-pink));
+}
+
+.gradient-bg-secondary {
+  background: linear-gradient(135deg, var(--primary-fire), var(--primary-deep-orange));
+}
+
+.gradient-bg-success {
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-pink));
+}
+
+/* Card Styles */
+.card {
+  @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  @apply shadow-xl transform -translate-y-1;
+}
+
+.card-dark {
+  @apply bg-gray-800 border-gray-700 text-white;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-orange), var(--primary-red));
+  @apply text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--primary-fire), var(--primary-deep-orange));
+  @apply text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--primary-orange), var(--primary-gold));
+  @apply text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--primary-red), var(--primary-deep-orange));
+  @apply text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-outline {
+  @apply border-2 border-orange-500 text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300;
+}
+
+/* Form Styles */
+.form-input {
+  @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white shadow-sm;
+}
+
+.form-input:focus {
+  @apply shadow-2xl transform scale-[1.02] border-purple-500;
+}
+
+.form-input:hover {
+  @apply border-purple-300 shadow-md;
+}
+
+.form-select {
+  @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white shadow-sm cursor-pointer;
+}
+
+.form-select:hover {
+  @apply border-purple-300 shadow-md;
+}
+
+.form-select:focus {
+  @apply shadow-2xl transform scale-[1.02] border-purple-500;
+}
+
+/* Animation Classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-width: 32rem;
+    width: 100%;
+  margin: 1rem;
+  padding: 1.5rem;
+}
+
+.modal-overlay-dark {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.modal-content-dark {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: white;
+}
+
+/* Loading Spinner */
+.spinner {
+  @apply animate-spin rounded-full border-4 border-gray-200 border-t-blue-500;
+}
+
+/* Progress Bar */
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full h-2.5;
+}
+
+.progress-fill {
+  @apply bg-gradient-to-r from-blue-500 to-pink-500 h-2.5 rounded-full transition-all duration-500;
+}
+
+/* Badge Styles */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-purple {
+  @apply bg-purple-100 text-purple-800;
+}
+
+/* Table Styles */
+.table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+.table-header {
+  @apply bg-gray-50;
+}
+
+.table-row {
+  @apply hover:bg-gray-50 transition-colors duration-200;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6;
+}
+
+/* Navigation Styles */
+.nav-link {
+  @apply text-gray-700 hover:text-blue-500 transition-colors duration-200 font-medium;
+}
+
+.nav-link.active {
+  @apply text-blue-500 font-semibold;
+}
+
+/* Stats Card */
+.stats-card {
+  @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+}
+
+.stats-icon {
+  @apply w-12 h-12 rounded-full flex items-center justify-center text-2xl;
+}
+
+.stats-value {
+  @apply text-3xl font-bold;
+}
+
+.stats-label {
+  @apply text-sm font-medium text-gray-500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    @apply p-4;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+    @apply px-4 py-2 text-sm;
+  }
+  
+  .stats-card {
+    @apply p-4;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .card {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  .form-input, .form-select {
+    @apply bg-gray-700 border-gray-600 text-white;
+  }
+  
+  .table-header {
+    @apply bg-gray-800;
+  }
+  
+  .table-row {
+    @apply hover:bg-gray-700;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
+
+/* Utility Classes */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(10px);
+}
+
+/* Animation Delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }

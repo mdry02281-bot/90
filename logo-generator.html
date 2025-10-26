@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PromoHive Logo Generator</title>
+</head>
+<body>
+    <canvas id="logoCanvas" width="200" height="100"></canvas>
+    <script>
+        const canvas = document.getElementById('logoCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Clear canvas with transparent background
+        ctx.clearRect(0, 0, 200, 100);
+        
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, 200, 0);
+        gradient.addColorStop(0, '#00d4ff');
+        gradient.addColorStop(1, '#ff0080');
+        
+        // Draw hexagon
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(100, 15);
+        ctx.lineTo(120, 25);
+        ctx.lineTo(120, 45);
+        ctx.lineTo(100, 55);
+        ctx.lineTo(80, 45);
+        ctx.lineTo(80, 25);
+        ctx.closePath();
+        ctx.stroke();
+        
+        // Draw nodes
+        ctx.fillStyle = gradient;
+        const nodes = [
+            [100, 15], [120, 25], [120, 45], 
+            [100, 55], [80, 45], [80, 25]
+        ];
+        nodes.forEach(([x, y]) => {
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+        
+        // Central dot
+        ctx.fillStyle = '#00d4ff';
+        ctx.beginPath();
+        ctx.arc(100, 35, 2, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Text
+        ctx.fillStyle = '#333333';
+        ctx.font = 'bold 18px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('PromoHive', 100, 75);
+        
+        ctx.fillStyle = '#666666';
+        ctx.font = '10px Arial';
+        ctx.fillText('GLOBAL PROMO NETWORK', 100, 90);
+        
+        // Download as PNG
+        const link = document.createElement('a');
+        link.download = 'logo.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    </script>
+</body>
+</html>
