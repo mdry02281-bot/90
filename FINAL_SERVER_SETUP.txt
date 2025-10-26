@@ -1,0 +1,41 @@
+# إعداد نهائي على السيرفر
+
+أدخل هذا الملف على السيرفر:
+
+cat > /root/55/.env << 'ENVFILE'
+# Supabase Database Connection
+# استبدل [YOUR-PASSWORD] بكلمة مرور قاعدة البيانات من Supabase Dashboard
+DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:5432/postgres"
+
+# أو إذا فشل، جرب هذا
+# DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:[YOUR-PASSWORD]@db.jxtutquvxmkrajfvdbab.supabase.co:5432/postgres"
+
+# JWT Configuration
+JWT_SECRET="promohive-super-secret-key-2024-changeme"
+JWT_REFRESH_SECRET="promohive-refresh-secret-2024-changeme"
+
+# Server Configuration
+NODE_ENV=production
+PORT=3002
+HOST=0.0.0.0
+
+# Email (اختياري)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=noreply@promohive.com
+SMTP_PASS=your-password
+
+ENVFILE
+
+# ثم نفذ:
+npx prisma generate
+npx prisma db pull
+npm run build
+pm2 restart promohive
+
+# تحقق
+pm2 logs promohive | grep -i "database\|connected"
+
+# افتح الموقع
+# https://globalpromonetwork.store/admin
+

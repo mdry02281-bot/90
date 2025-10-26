@@ -1,0 +1,53 @@
+# ========================================
+# إعداد ملف .env على السيرفر - Supabase
+# ========================================
+
+# على السيرفر نفذ:
+cd /root/55
+nano .env
+
+# أو استخدم cat:
+cat > .env << 'ENVEOF'
+
+# ========================================
+# Supabase Database
+# ========================================
+# احصل على connection string من:
+# https://supabase.com/dashboard/project/jxtutquvxmkrajfvdbab/settings/database
+#
+# ثم ضعها هنا (احذف [YOUR-PASSWORD] وضع password الحقيقي):
+DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:5432/postgres"
+
+# أو حاول هذا (بدون pooler):
+# DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:[YOUR-PASSWORD]@db.jxtutquvxmkrajfvdbab.supabase.co:5432/postgres"
+
+# ========================================
+# JWT Configuration
+# ========================================
+JWT_SECRET="promohive-super-secret-jwt-key-2024"
+JWT_REFRESH_SECRET="promohive-refresh-secret-key-2024"
+
+# ========================================
+# Server Configuration
+# ========================================
+NODE_ENV=production
+PORT=3002
+HOST=0.0.0.0
+
+# ========================================
+# Supabase
+# ========================================
+SUPABASE_URL="https://jxtutquvxmkrajfvdbab.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHV0cXV2eG1rcmFqZnZkYmFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NDA5MjcsImV4cCI6MjA3NzAxNjkyN30.jLMQWJqwj6Amja-bsBmLwZjmTHgusL_1q2n_ZThbRrM"
+
+ENVEOF
+
+# ========================================
+# ثم نفذ:
+# ========================================
+npx prisma generate
+npx prisma db pull
+npm run build
+pm2 restart promohive
+pm2 logs promohive
+

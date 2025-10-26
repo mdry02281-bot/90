@@ -1,0 +1,14 @@
+# أمر سريع على السيرفر:
+
+cd /root/55
+
+cat > .env << 'ENVEOF'
+DATABASE_URL="postgresql://postgres.jxtutquvxmkrajfvdbab:Ibrahem@811997@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
+JWT_SECRET="promohive-secret-2024"
+JWT_REFRESH_SECRET="promohive-refresh-2024"
+NODE_ENV=production
+PORT=3002
+HOST=0.0.0.0
+ENVEOF
+
+npm run build && pm2 restart promohive && pm2 logs promohive --lines 5

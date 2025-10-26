@@ -1,0 +1,12 @@
+# Copy these commands and paste in your server terminal
+
+cd /var/www/promohive
+git fetch origin main
+git pull origin main
+rm -rf node_modules/.cache .next dist build
+npm cache clean --force
+npm install
+npm run build
+pm2 restart promohive
+pm2 logs promohive --lines 20
+
