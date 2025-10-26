@@ -458,6 +458,43 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-8">
+            {/* Debug Panel */}
+            <Card className="card-interactive animate-slide-up bg-blue-50 border-2 border-blue-300">
+              <CardHeader>
+                <CardTitle className="flex items-center text-blue-900">
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  Overview Data Debug
+                </CardTitle>
+                <CardDescription className="text-blue-700">
+                  Raw statistics data from backend
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="text-xs text-gray-600 p-2 bg-white rounded overflow-auto max-h-40">
+                  <strong>Full Stats Object:</strong>
+                  <pre>{JSON.stringify(stats, null, 2)}</pre>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <strong className="text-blue-900">Total Users:</strong>
+                    <span className="ml-2 font-mono">{stats?.users?.total || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <strong className="text-blue-900">Pending Users:</strong>
+                    <span className="ml-2 font-mono">{stats?.users?.pending || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <strong className="text-blue-900">Approved Users:</strong>
+                    <span className="ml-2 font-mono">{stats?.users?.approved || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <strong className="text-blue-900">Active Tasks:</strong>
+                    <span className="ml-2 font-mono">{stats?.tasks?.active || 'N/A'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Platform Overview */}
             <div className="grid lg:grid-cols-2 gap-8">
               <Card className="card-interactive animate-slide-up">
@@ -558,33 +595,41 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {stats?.recentActivity?.length > 0 ? (
-                    stats.recentActivity.slice(0, 5).map((activity, index) => (
-                      <div 
-                        key={index} 
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover-lift animate-scale-in"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                            <Activity className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{activity.description}</p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(activity.createdAt).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                          {activity.type}
-                        </Badge>
+                  {stats?.recentActivity && Array.isArray(stats.recentActivity) && stats.recentActivity.length > 0 ? (
+                    <>
+                      <div className="text-xs text-gray-500 mb-2">
+                        Showing {stats.recentActivity.length} activity item(s)
                       </div>
-                    ))
+                      {stats.recentActivity.slice(0, 5).map((activity: any, index: number) => (
+                        <div 
+                          key={index} 
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover-lift animate-scale-in"
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                              <Activity className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{activity.description || 'Activity'}</p>
+                              <p className="text-xs text-gray-500">
+                                {activity.createdAt ? new Date(activity.createdAt).toLocaleString() : 'No date'}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                            {activity.type || 'unknown'}
+                          </Badge>
+                        </div>
+                      ))}
+                    </>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No recent activity</p>
+                      <p className="text-xs mt-2">
+                        {stats?.recentActivity ? `Data: ${JSON.stringify(stats.recentActivity).substring(0, 50)}...` : 'No activity data available'}
+                      </p>
                     </div>
                   )}
                 </div>
