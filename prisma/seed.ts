@@ -252,6 +252,74 @@ async function main() {
 
   console.log('✅ Default settings created');
 
+  // Create spin prizes
+  const spinPrizes = [
+    {
+      id: 'spin-lucky-1',
+      name: '🎁 Small Bonus',
+      description: 'Win 0.10 coins',
+      type: 'DIRECT_REWARD',
+      amount: 0.10,
+      probability: 25,
+      order: 1,
+    },
+    {
+      id: 'spin-lucky-2',
+      name: '🎁 Medium Bonus',
+      description: 'Win 0.25 coins',
+      type: 'DIRECT_REWARD',
+      amount: 0.25,
+      probability: 15,
+      order: 2,
+    },
+    {
+      id: 'spin-lucky-3',
+      name: '🎁 Large Bonus',
+      description: 'Win 0.50 coins',
+      type: 'DIRECT_REWARD',
+      amount: 0.50,
+      probability: 10,
+      order: 3,
+    },
+    {
+      id: 'spin-lucky-4',
+      name: '🌟 Extra Spin',
+      description: 'Get an extra spin',
+      type: 'BONUS',
+      amount: null,
+      probability: 10,
+      order: 4,
+    },
+    {
+      id: 'spin-lucky-5',
+      name: '💎 Mega Bonus',
+      description: 'Win 1.00 coin',
+      type: 'DIRECT_REWARD',
+      amount: 1.00,
+      probability: 5,
+      order: 5,
+    },
+    {
+      id: 'spin-lucky-6',
+      name: '😔 Try Again',
+      description: 'No prize this time',
+      type: 'BONUS',
+      amount: null,
+      probability: 35,
+      order: 6,
+    },
+  ];
+
+  for (const prize of spinPrizes) {
+    await prisma.spinPrize.upsert({
+      where: { id: prize.id },
+      update: {},
+      create: prize,
+    });
+  }
+
+  console.log('✅ Spin prizes created');
+
   // Create sample admin action
   await prisma.adminAction.create({
     data: {

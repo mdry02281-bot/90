@@ -82,6 +82,8 @@ model User {
   levelRequests   LevelRequest[]
   adminActions    AdminAction[]
   magicLinkTokens MagicLinkToken[]
+  spins           Spin[]
+  dailySpinLimit  DailySpinLimit?
 
   @@index([email])
   @@index([username])
@@ -308,6 +310,60 @@ model MagicLinkToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
+  @@index([userId])
+}
+
+enum SpinPrizeType {
+  BONUS
+  DIRECT_REWARD
+}
+
+model SpinPrize {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        SpinPrizeType
+  amount      Decimal?     @db.Decimal(10, 2)
+  probability Int          // 0-100 (0 = 0%, 100 = 100%)
+  isActive    Boolean      @default(true)
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  spins Spin[]
+
+  @@index([isActive])
+  @@index([order])
+}
+
+model Spin {
+  id          String   @id @default(cuid())
+  userId      String
+  prizeId     String?
+  result      String
+  won         Boolean  @default(false)
+  bonusAmount Decimal? @db.Decimal(10, 2)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prize SpinPrize? @relation(fields: [prizeId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DailySpinLimit {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  spinsUsed    Int      @default(0)
+  maxSpins     Int      @default(3)
+  resetDate    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
 
