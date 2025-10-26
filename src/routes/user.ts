@@ -33,7 +33,6 @@ router.get('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
             select: {
               id: true,
               username: true,
-              referralCode: true,
             },
           },
         },
@@ -63,7 +62,7 @@ router.get('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
       birthdate: user.birthdate,
       role: user.role,
       level: user.level,
-      referralCode: user.referralCode,
+      referralCode: user.id, // Use user ID as referral code
       isApproved: user.isApproved,
       createdAt: user.createdAt,
       lastLoginAt: user.lastLoginAt,
@@ -107,7 +106,6 @@ router.put('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
       birthdate: true,
       role: true,
       level: true,
-      referralCode: true,
     },
   });
 
@@ -233,7 +231,7 @@ router.get('/referrals', asyncHandler(async (req: AuthenticatedRequest, res) => 
   // Calculate referral stats
   const totalReferrals = referrals.length;
   const totalBonus = referrals.reduce((sum, ref) => sum + Number(ref.bonus), 0);
-  const activeReferrals = referrals.filter(ref => ref.referred.wallet?.balance > 0).length;
+  const activeReferrals = referrals.filter(ref => Number(ref.referred.wallet?.balance || 0) > 0).length;
 
   res.json({
     success: true,
@@ -342,7 +340,7 @@ router.post('/level-upgrade', asyncHandler(async (req: AuthenticatedRequest, res
   const upgradeCost = settings.find(s => s.key === `LEVEL_UPGRADE_L${data.requestedLevel}`)?.value || '0';
   const requiredBalance = parseFloat(upgradeCost);
 
-  if (user.wallet!.balance < requiredBalance) {
+  if (Number(user.wallet!.balance) < requiredBalance) {
     return res.status(400).json({ 
       error: `Insufficient balance. Required: $${requiredBalance}` 
     });
@@ -432,7 +430,7 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
         fullName: user.fullName,
         role: user.role,
         level: user.level,
-        referralCode: user.referralCode,
+        referralCode: user.id,
         createdAt: user.createdAt,
       },
       wallet,

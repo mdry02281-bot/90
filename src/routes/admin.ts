@@ -286,7 +286,7 @@ router.post('/users/:id/wallet-adjust', asyncHandler(async (req: AuthenticatedRe
 
   const amount = data.type === 'credit' ? data.amount : -data.amount;
 
-  if (data.type === 'debit' && user.wallet.balance < data.amount) {
+  if (data.type === 'debit' && Number(user.wallet.balance) < data.amount) {
     return res.status(400).json({ error: 'Insufficient balance' });
   }
 
@@ -405,7 +405,14 @@ router.post('/tasks', asyncHandler(async (req: AuthenticatedRequest, res) => {
 
   const task = await prisma.task.create({
     data: {
-      ...data,
+      title: data.title,
+      description: data.description,
+      type: data.type,
+      reward: data.reward,
+      instructions: data.instructions,
+      url: data.url,
+      proofRequired: data.proofRequired,
+      maxParticipants: data.maxParticipants,
       status: 'ACTIVE',
       currentParticipants: 0,
     },

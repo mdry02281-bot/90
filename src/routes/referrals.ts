@@ -13,7 +13,7 @@ router.get('/link', asyncHandler(async (req: AuthenticatedRequest, res) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-      referralCode: true,
+      id: true,
       username: true,
     },
   });
@@ -22,11 +22,12 @@ router.get('/link', asyncHandler(async (req: AuthenticatedRequest, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
-  const referralLink = `${process.env.PLATFORM_URL || 'http://localhost:3000'}/register?ref=${user.referralCode}`;
+  // Generate referral link using user ID
+  const referralLink = `${process.env.PLATFORM_URL || 'http://localhost:3000'}/register?ref=${user.id}`;
 
   res.json({
     success: true,
-    referralCode: user.referralCode,
+    referralCode: user.id,
     referralLink,
   });
 }));
