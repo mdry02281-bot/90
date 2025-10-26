@@ -81,13 +81,16 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await fetch('/api/admin/analytics/summary', {
+      const response = await fetch('/api/admin/dashboard', {
         credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
-        console.log('Dashboard Stats:', data);
-        setStats(data);
+        console.log('Dashboard Stats Response:', data);
+        // The API returns { success: true, stats: {...} }
+        const statsData = data.stats || data;
+        console.log('Parsed Stats Data:', statsData);
+        setStats(statsData);
       } else {
         const errorData = await response.json();
         console.error('Failed to load dashboard stats:', errorData);
@@ -104,16 +107,30 @@ export default function AdminDashboard() {
   const fetchPendingUsers = async () => {
     setUsersLoading(true);
     try {
+      console.log('Fetching pending users...');
       const response = await fetch('/api/admin/users?status=pending', {
         credentials: 'include',
       });
+      console.log('Pending users response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
-        setPendingUsers(data.users || []);
+        console.log('Pending users response data:', data);
+        const users = data.users || [];
+        console.log('Parsed pending users:', users);
+        console.log('Number of pending users:', users.length);
+        setPendingUsers(users);
+        
+        if (users.length === 0) {
+          console.log('No pending users found');
+        }
       } else {
+        const errorData = await response.json();
+        console.error('Failed to load pending users:', response.status, errorData);
         toast.error('Failed to load pending users');
       }
     } catch (error) {
+      console.error('Network error fetching pending users:', error);
       toast.error('Network error');
     } finally {
       setUsersLoading(false);
@@ -122,20 +139,62 @@ export default function AdminDashboard() {
 
   const handleApproveUser = async (userId: string) => {
     try {
+      console.log('Approving user:', userId);
       const response = await fetch(`/api/admin/users/${userId}/approve`, {
         method: 'POST',
         credentials: 'include',
       });
 
+      console.log('Approve response status:', response.status);
+
       if (response.ok) {
+        const data = await response.json();
+        console.log('Approve success:', data);
         toast.success('User approved successfully');
         fetchPendingUsers();
         fetchDashboardStats();
       } else {
         const data = await response.json();
+        console.error('Approve failed:', data);
         toast.error(data.error || 'Failed to approve user');
       }
     } catch (error) {
+      console.error('Approve network error:', error);
+      toast.error('Network error');
+    }
+  };
+
+  const handleCreateTestUser = async () => {
+    try {
+      console.log('Creating test user...');
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: `test${Date.now()}@promohive.com`,
+          password: 'Test123!@#',
+          username: `testuser${Date.now()}`,
+          fullName: 'Test User',
+          gender: 'male',
+          birthdate: '1990-01-01',
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Test user created:', data);
+        toast.success('Test user created successfully');
+        fetchPendingUsers();
+        fetchDashboardStats();
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to create test user:', errorData);
+        toast.error(errorData.error || 'Failed to create test user');
+      }
+    } catch (error) {
+      console.error('Create test user network error:', error);
       toast.error('Network error');
     }
   };
@@ -371,7 +430,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => {
+        <Tabs value={activeTab} onValueChange={(value: string) => {
           console.log('Tab changed to:', value);
           setActiveTab(value);
         }} className="animate-scale-in">
@@ -534,6 +593,43 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
+            {/* Debug Info */}
+            <Card className="card-interactive animate-slide-up bg-blue-50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-blue-900">
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  Debug Information
+                </CardTitle>
+                <CardDescription className="text-blue-700">
+                  Technical details for troubleshooting
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="text-sm">
+                  <strong className="text-blue-900">Pending Users Count:</strong> 
+                  <span className="ml-2 font-mono bg-white px-2 py-1 rounded">{pendingUsers.length}</span>
+                </div>
+                <div className="text-sm">
+                  <strong className="text-blue-900">Users Loading:</strong> 
+                  <span className="ml-2 font-mono bg-white px-2 py-1 rounded">{usersLoading ? 'Yes' : 'No'}</span>
+                </div>
+                <div className="text-xs text-gray-600 mt-2 p-2 bg-white rounded overflow-auto max-h-32">
+                  <strong>Raw Data:</strong>
+                  <pre>{JSON.stringify({ pendingUsersCount: pendingUsers.length, usersLoading }, null, 2)}</pre>
+                </div>
+                <div className="mt-3 pt-3 border-t border-blue-300">
+                  <Button 
+                    onClick={handleCreateTestUser} 
+                    className="btn-primary"
+                    size="sm"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Create Test User
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="card-interactive animate-slide-up">
               <CardHeader>
                 <CardTitle className="flex items-center">

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Route, Switch } from 'wouter'
-import AdminDashboard from './pages/admin/AdminDashboard'
 
-// Notification Context
-const NotificationContext = React.createContext()
+// Notification Context Types
+interface NotificationContextType {
+  showNotification: (message: string, type?: 'info' | 'success' | 'error' | 'warning') => void
+  removeNotification: (id: number) => void
+}
 
-function NotificationProvider({ children }) {
-  const [notifications, setNotifications] = useState([])
+const NotificationContext = React.createContext<NotificationContextType | undefined>(undefined)
 
-  const showNotification = (message, type = 'info') => {
+function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const [notifications, setNotifications] = useState<Array<{ id: number; message: string; type: 'info' | 'success' | 'error' | 'warning' }>>([])
+
+  const showNotification = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const id = Date.now()
     const notification = { id, message, type }
     setNotifications([...notifications, notification])
@@ -18,7 +22,7 @@ function NotificationProvider({ children }) {
     }, 5000)
   }
 
-  const removeNotification = (id) => {
+  const removeNotification = (id: number) => {
     setNotifications(notifications.filter(n => n.id !== id))
   }
 
@@ -53,7 +57,7 @@ function NotificationProvider({ children }) {
 }
 
 // Navigation Component
-function Navigation({ user, onLogout }) {
+function Navigation({ user, onLogout }: { user: User | null; onLogout: () => void }) {
   const supportWhatsApp = '+17253348692'
   const supportEmail = 'promohive@globalpromonetwork.store'
 
@@ -69,7 +73,7 @@ function Navigation({ user, onLogout }) {
     { href: '/admin', icon: '🛠️', label: 'Admin', loggedIn: true, adminOnly: true },
   ]
 
-  const NavIcon = ({ href, icon, label }) => (
+  const NavIcon = ({ href, icon, label }: { href: string; icon: string; label: string }) => (
     <a 
       href={href} 
       className="group relative flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-110"
@@ -150,11 +154,40 @@ function Navigation({ user, onLogout }) {
   )
 }
 
-// Auth Context
-const AuthContext = React.createContext()
+// Auth Context Types
+interface User {
+  id?: string
+  email?: string
+  username?: string
+  fullName?: string
+  role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN'
+  level?: number
+  isApproved?: boolean
+  balance?: number
+  dailySpins?: number
+  lastSpinDate?: string | null
+}
 
-function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
+interface AuthContextType {
+  user: User | null
+  loading: boolean
+  login: (userData: User) => void
+  logout: () => void
+}
+
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
+
+// Custom hook to use auth context
+function useAuth() {
+  const context = React.useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -165,7 +198,7 @@ function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const login = (userData) => {
+  const login = (userData: User) => {
     setUser(userData)
     localStorage.setItem('user', JSON.stringify(userData))
   }
@@ -365,7 +398,7 @@ function Home() {
 
 // Login component
 function Login() {
-  const { login } = React.useContext(AuthContext)
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -504,7 +537,7 @@ function Login() {
 
 // Register component
 function Register() {
-  const { login } = React.useContext(AuthContext)
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -691,7 +724,7 @@ function Register() {
 
 // Profile component
 function Profile() {
-  const { user, logout, loading, login } = React.useContext(AuthContext)
+  const { user, logout, loading, login } = useAuth()
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     username: user?.username || '',
@@ -880,7 +913,7 @@ function Profile() {
 
 // Dashboard component
 function Dashboard() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [stats, setStats] = useState({
     balance: user?.role === 'SUPER_ADMIN' ? 1000.00 : 5.00,
     tasksCompleted: 0,
@@ -1053,7 +1086,7 @@ function Dashboard() {
 
 // Luck Wheel component
 function LuckWheel() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [isSpinning, setIsSpinning] = useState(false)
   const [result, setResult] = useState(null)
   const [spinsLeft, setSpinsLeft] = useState(3)
@@ -1270,7 +1303,7 @@ function LuckWheel() {
 
 // Mining Contracts component
 function MiningContracts() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [contracts] = useState([
     {
       id: 1,
@@ -1415,7 +1448,7 @@ function MiningContracts() {
 
 // Admin Dashboard component
 function AdminDashboard() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
   const [users, setUsers] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'USER', isApproved: false, balance: 0, level: 0 },
@@ -2233,7 +2266,7 @@ function NotFound() {
 
 // Tasks component
 function Tasks() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [tasks] = useState([
     {
       id: 1,
@@ -2352,7 +2385,7 @@ function Tasks() {
 
 // Referrals component
 function Referrals() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [referralCode] = useState('PHJXGSWVLH')
   // Updated referral system with new rewards structure
   const referralRewards = {
@@ -2519,7 +2552,7 @@ function Referrals() {
 
 // Withdrawals component
 function Withdrawals() {
-  const { user, logout, loading } = React.useContext(AuthContext)
+  const { user, logout, loading } = useAuth()
   const [formData, setFormData] = useState({
     amount: '',
     walletAddress: '',
