@@ -75,6 +75,10 @@ export default function AdminDashboard() {
     fetchPendingUsers();
   }, []);
 
+  useEffect(() => {
+    console.log('Active tab changed to:', activeTab);
+  }, [activeTab]);
+
   const fetchDashboardStats = async () => {
     try {
       const response = await fetch('/api/admin/analytics/summary', {
@@ -305,7 +309,10 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Button 
                   className="btn-primary btn-touch hover-lift"
-                  onClick={() => setActiveTab('users')}
+                  onClick={() => {
+                    console.log('Switching to users tab');
+                    setActiveTab('users');
+                  }}
                 >
                   <UserCheck className="h-4 w-4 mr-2" />
                   Approve Users
@@ -315,14 +322,20 @@ export default function AdminDashboard() {
                 </Button>
                 <Button 
                   className="btn-secondary btn-touch hover-lift"
-                  onClick={() => setActiveTab('tasks')}
+                  onClick={() => {
+                    console.log('Switching to tasks tab');
+                    setActiveTab('tasks');
+                  }}
                 >
                   <Target className="h-4 w-4 mr-2" />
                   Manage Tasks
                 </Button>
                 <Button 
                   className="btn-secondary btn-touch hover-lift"
-                  onClick={() => setActiveTab('withdrawals')}
+                  onClick={() => {
+                    console.log('Switching to withdrawals tab');
+                    setActiveTab('withdrawals');
+                  }}
                 >
                   <Wallet className="h-4 w-4 mr-2" />
                   Review Withdrawals
@@ -330,7 +343,13 @@ export default function AdminDashboard() {
                     <Badge className="ml-2 bg-yellow-500">{stats.withdrawals.pending}</Badge>
                   ) : null}
                 </Button>
-                <Button className="btn-secondary btn-touch hover-lift" disabled>
+                <Button 
+                  className="btn-secondary btn-touch hover-lift"
+                  onClick={() => {
+                    console.log('Switching to settings tab');
+                    setActiveTab('settings');
+                  }}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Platform Settings
                 </Button>
@@ -341,7 +360,7 @@ export default function AdminDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-scale-in">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="overview" className="hover-glow">
               <BarChart3 className="h-4 w-4 mr-2" />
               Overview
@@ -357,6 +376,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="withdrawals" className="hover-glow">
               <Wallet className="h-4 w-4 mr-2" />
               Withdrawals
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="hover-glow">
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -604,6 +627,33 @@ export default function AdminDashboard() {
                   <Button className="btn-primary hover-glow">
                     <Wallet className="h-4 w-4 mr-2" />
                     Manage Withdrawals
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-8">
+            <Card className="card-interactive animate-slide-up">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Settings className="h-5 w-5 mr-2 text-brand-blue" />
+                  Platform Settings
+                </CardTitle>
+                <CardDescription>
+                  Configure global platform settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Platform Settings</h3>
+                  <p className="text-gray-600 mb-4">
+                    Adjust various platform configurations, such as welcome bonuses, referral rates, and withdrawal limits.
+                  </p>
+                  <Button className="btn-primary hover-glow" disabled>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Configure Settings
                   </Button>
                 </div>
               </CardContent>
