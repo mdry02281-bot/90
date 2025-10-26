@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat {
+            display: inline-block;
+            padding: 15px;
+            margin: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Admin Dashboard Test</h1>
+    
+    <div class="card">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email" value="admin@promohive.com"><br><br>
+        <input type="password" id="password" placeholder="Password" value="admin123!"><br><br>
+        <button onclick="login()">Login</button>
+        <pre id="loginResult"></pre>
+    </div>
+
+    <div class="card">
+        <h2>API Test - Analytics Summary</h2>
+        <button onclick="testAnalytics()">Test Analytics</button>
+        <pre id="analyticsResult"></pre>
+    </div>
+
+    <div class="card">
+        <h2>Results</h2>
+        <div id="stats"></div>
+    </div>
+
+    <script>
+        let token = '';
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('https://globalpromonetwork.store/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                document.getElementById('loginResult').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.accessToken) {
+                    token = data.accessToken;
+                    localStorage.setItem('accessToken', data.accessToken);
+                }
+            } catch (error) {
+                document.getElementById('loginResult').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function testAnalytics() {
+            try {
+                const response = await fetch('https://globalpromonetwork.store/api/admin/analytics/summary', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                document.getElementById('analyticsResult').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    document.getElementById('stats').innerHTML = `
+                        <div class="stat">
+                            <h3>Total Users</h3>
+                            <p>${data.users.total}</p>
+                        </div>
+                        <div class="stat">
+                            <h3>Active Tasks</h3>
+                            <p>${data.tasks.active}</p>
+                        </div>
+                        <div class="stat">
+                            <h3>Pending Withdrawals</h3>
+                            <p>${data.withdrawals.pending}</p>
+                        </div>
+                        <div class="stat">
+                            <h3>Total Revenue</h3>
+                            <p>$${data.revenue.total}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('analyticsResult').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
