@@ -38,7 +38,7 @@ app.use(helmet({
       'script-src-elem': ["'self'", "'unsafe-inline'", "https://static.cloudflareinsights.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-      connectSrc: ["'self'", "https://api.*", "wss:", "https://static.cloudflareinsights.com"],
+      connectSrc: ["'self'", "wss:", "https://static.cloudflareinsights.com"],
       frameSrc: ["'self'"],
     },
   },

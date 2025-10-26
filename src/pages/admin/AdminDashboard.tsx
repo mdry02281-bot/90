@@ -52,12 +52,26 @@ interface DashboardStats {
   recentActivity: any[];
 }
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  role: string;
+  isApproved: boolean;
+  isSuspended: boolean;
+  createdAt: string;
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
+    fetchPendingUsers();
   }, []);
 
   const fetchDashboardStats = async () => {
@@ -78,22 +92,39 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUserAction = async (userId: string, action: string) => {
+  const fetchPendingUsers = async () => {
+    setUsersLoading(true);
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch('/api/admin/users?status=pending', {
         credentials: 'include',
-        body: JSON.stringify({ [action]: true }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPendingUsers(data.users || []);
+      } else {
+        toast.error('Failed to load pending users');
+      }
+    } catch (error) {
+      toast.error('Network error');
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const handleApproveUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/approve`, {
+        method: 'POST',
+        credentials: 'include',
       });
 
       if (response.ok) {
-        toast.success(`User ${action} successfully`);
+        toast.success('User approved successfully');
+        fetchPendingUsers();
         fetchDashboardStats();
       } else {
-        toast.error(`Failed to ${action} user`);
+        const data = await response.json();
+        toast.error(data.error || 'Failed to approve user');
       }
     } catch (error) {
       toast.error('Network error');
@@ -421,24 +452,58 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Users className="h-5 w-5 mr-2 text-brand-blue" />
-                  User Management
+                  Pending User Approvals
                 </CardTitle>
                 <CardDescription>
-                  Manage user accounts and permissions
+                  Review and approve new user registrations
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">User Management</h3>
-                  <p className="text-gray-600 mb-4">
-                    Manage user accounts, approve registrations, and handle user-related tasks.
-                  </p>
-                  <Button className="btn-primary hover-glow">
-                    <Users className="h-4 w-4 mr-2" />
-                    Manage Users
-                  </Button>
-                </div>
+                {usersLoading ? (
+                  <div className="text-center py-12">
+                    <div className="spinner mx-auto mb-4" />
+                    <p className="text-gray-600">Loading users...</p>
+                  </div>
+                ) : pendingUsers.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-400" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Pending Users</h3>
+                    <p className="text-gray-600">All users have been approved.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingUsers.map((user) => (
+                      <div 
+                        key={user.id}
+                        className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{user.fullName}</h4>
+                            <p className="text-sm text-gray-600">{user.email}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Username: {user.username} | Registered: {new Date(user.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                              <Clock className="h-3 w-3 mr-1" />
+                              Pending
+                            </Badge>
+                            <Button 
+                              onClick={() => handleApproveUser(user.id)}
+                              className="btn-primary"
+                              size="sm"
+                            >
+                              <UserCheck className="h-4 w-4 mr-1" />
+                              Approve
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
