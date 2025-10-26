@@ -375,23 +375,6 @@ function Login() {
     e.preventDefault()
     setError('')
     
-    if (formData.email === 'admin@promohive.com' && formData.password === 'Admin123!') {
-      login({
-        id: 'admin-001',
-        email: 'admin@promohive.com',
-        username: 'superadmin',
-        fullName: 'Super Administrator',
-        role: 'SUPER_ADMIN',
-        level: 3,
-        isApproved: true,
-        balance: 1000.00,
-        dailySpins: 0,
-        lastSpinDate: null
-      })
-      window.location.href = '/admin'
-      return
-    }
-    
     if (formData.email && formData.password) {
       login({
         id: 'user-' + Date.now(),
@@ -475,12 +458,6 @@ function Login() {
               Create one here
             </a>
           </p>
-        </div>
-        
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800 font-semibold">Admin Login:</p>
-          <p className="text-sm text-blue-600">Email: admin@promohive.com</p>
-          <p className="text-sm text-blue-600">Password: Admin123!</p>
         </div>
       </div>
     </div>
