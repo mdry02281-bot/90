@@ -68,6 +68,7 @@ export default function AdminDashboard() {
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     fetchDashboardStats();
@@ -270,19 +271,34 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button className="btn-primary btn-touch hover-lift">
+                <Button 
+                  className="btn-primary btn-touch hover-lift"
+                  onClick={() => setActiveTab('users')}
+                >
                   <UserCheck className="h-4 w-4 mr-2" />
                   Approve Users
+                  {stats?.users?.pending ? (
+                    <Badge className="ml-2 bg-yellow-500">{stats.users.pending}</Badge>
+                  ) : null}
                 </Button>
-                <Button className="btn-secondary btn-touch hover-lift">
+                <Button 
+                  className="btn-secondary btn-touch hover-lift"
+                  onClick={() => setActiveTab('tasks')}
+                >
                   <Target className="h-4 w-4 mr-2" />
                   Manage Tasks
                 </Button>
-                <Button className="btn-secondary btn-touch hover-lift">
+                <Button 
+                  className="btn-secondary btn-touch hover-lift"
+                  onClick={() => setActiveTab('withdrawals')}
+                >
                   <Wallet className="h-4 w-4 mr-2" />
                   Review Withdrawals
+                  {stats?.withdrawals?.pending ? (
+                    <Badge className="ml-2 bg-yellow-500">{stats.withdrawals.pending}</Badge>
+                  ) : null}
                 </Button>
-                <Button className="btn-secondary btn-touch hover-lift">
+                <Button className="btn-secondary btn-touch hover-lift" disabled>
                   <Settings className="h-4 w-4 mr-2" />
                   Platform Settings
                 </Button>
@@ -292,7 +308,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="animate-scale-in">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-scale-in">
           <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="overview" className="hover-glow">
               <BarChart3 className="h-4 w-4 mr-2" />
