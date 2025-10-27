@@ -6,6 +6,10 @@ module.exports = {
       instances: 1,
       exec_mode: 'cluster',
       cwd: '/var/www/promohive',
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3000
+      },
       env: {
         NODE_ENV: 'production',
         PORT: 3000
