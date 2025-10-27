@@ -36,6 +36,7 @@ export default function Login() {
 
       if (data.success) {
         toast.success('Login successful!');
+        // Redirect to dashboard - data comes from database via cookies
         setLocation('/dashboard');
       } else {
         setError(data.error || 'Login failed');

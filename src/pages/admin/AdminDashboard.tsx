@@ -120,6 +120,9 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json',
         },
       });
+      
+      console.log('Dashboard Stats Response Status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
         console.log('Dashboard Stats Response:', data);
@@ -130,6 +133,14 @@ export default function AdminDashboard() {
       } else {
         const errorData = await response.json();
         console.error('Failed to load dashboard stats:', errorData);
+        
+        // If not authenticated, redirect to login
+        if (response.status === 401) {
+          toast.error('Please login as admin first');
+          window.location.href = '/login';
+          return;
+        }
+        
         toast.error('Failed to load dashboard stats');
       }
     } catch (error) {
