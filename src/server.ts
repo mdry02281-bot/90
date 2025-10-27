@@ -429,10 +429,49 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// Health check endpoint (must be before catch-all)
+app.get('/api/health', async (req, res) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV,
+      version: '1.0.0',
+      database: 'connected',
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+      }
+    });
+  } catch (error) {
+    console.error('[HEALTH] Database check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: 'Database connection failed',
+      environment: process.env.NODE_ENV
+    });
+  }
+});
+
+// API routes
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'PromoHive API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Catch-all handler for SPA
+// Catch-all handler for SPA (must be last)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
