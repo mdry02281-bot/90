@@ -11,7 +11,7 @@ module.exports = {
       NODE_ENV: 'production',
       PORT: 3002,
       HOST: 'srv1052990.hstgr.cloud',
-      DATABASE_URL: 'postgresql://postgres:[YOUR-PASSWORD]@db.jxtutquvxmkrajfvdbab.supabase.co:5432/postgres',
+      DATABASE_URL: 'postgresql://postgres:gMnu1Abr4KMbMlVA@db.jxtutquvxmkrajfvdbab.supabase.co:5432/postgres',
       SUPABASE_URL: 'https://jxtutquvxmkrajfvdbab.supabase.co',
       SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHV0cXV2eG1rcmFqZnZkYmFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NDA5MjcsImV4cCI6MjA3NzAxNjkyN30.jLMQWJqwj6Amja-bsBmLwZjmTHgusL_1q2n_ZThbRrM',
       SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHV0cXV2eG1rcmFqZnZkYmFiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTQ0MDkyNywiZXhwIjoyMDc3MDE2OTI3fQ.kWtyqG9Rz7Z_Cf2hBhgjW5eMwPgC6YLJzZQH1gW8D7o',
