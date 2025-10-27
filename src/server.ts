@@ -23,6 +23,9 @@ const prisma = new PrismaClient({
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Trust first proxy (nginx)
+app.set('trust proxy', 1);
+
 // Server bootstrap logging
 console.log('[BOOT] Server starting...');
 console.log('[BOOT] Environment:', {
@@ -378,6 +381,55 @@ app.post('/api/admin/withdrawals/:withdrawalId/process', async (req, res) => {
     });
   } catch (error) {
     console.error('[ADMIN] Process withdrawal error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// User login endpoint
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Here you should verify the password with your hashing mechanism
+    if (user.password !== password) { // In production, use proper password comparison
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Generate JWT token (you should implement this)
+    const token = 'your-jwt-token-here';
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        fullName: user.fullName,
+        role: user.role,
+      },
+      token
+    });
+  } catch (error) {
+    console.error('[AUTH] Login error:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Internal server error'
