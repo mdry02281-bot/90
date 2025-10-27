@@ -5,6 +5,7 @@ module.exports = {
       script: 'dist/index.js',
       instances: 1,
       exec_mode: 'cluster',
+      cwd: '/var/www/promohive',
       env: {
         NODE_ENV: 'development'
       },
