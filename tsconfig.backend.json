@@ -17,6 +17,6 @@
     "sourceMap": true,
     "types": ["node"]
   },
-  "include": ["src/index.ts", "src/routes/**/*", "src/middleware/**/*", "src/services/**/*", "src/utils/logger.ts", "src/utils/jwt.ts", "src/cron/**/*"],
+  "include": ["src/server.ts", "src/routes/**/*", "src/middleware/**/*", "src/services/**/*", "src/utils/logger.ts", "src/utils/jwt.ts", "src/cron/**/*"],
   "exclude": ["node_modules", "dist", "src/pages/**/*", "src/components/**/*", "src/hooks/**/*", "src/contexts/**/*", "src/lib/api.ts", "src/lib/trpc.ts", "src/lib/utils.ts", "src/utils/animations.ts", "src/tests/**/*", "src/_core/**/*"]
 }

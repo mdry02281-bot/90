@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'promohive',
-    script: './dist/index.js',
+    script: './dist/server.js',
     instances: 'max',
     exec_mode: 'cluster',
     env: {
