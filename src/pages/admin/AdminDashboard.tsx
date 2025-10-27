@@ -114,25 +114,35 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
+      console.log('Fetching dashboard stats from API...');
+      
       const response = await fetch('/api/admin/dashboard', {
-        credentials: 'include', // Cookies will be sent automatically
+        method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
       });
       
       console.log('Dashboard Stats Response Status:', response.status);
+      console.log('Dashboard Stats Response Headers:', response.headers);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Dashboard Stats Response:', data);
-        // The API returns { success: true, stats: {...} }
-        const statsData = data.stats || data;
-        console.log('Parsed Stats Data:', statsData);
-        setStats(statsData);
+        console.log('Dashboard Stats Response Data:', data);
+        
+        // Force use database data - no fallback to local data
+        if (data.success && data.stats) {
+          console.log('Using database stats:', data.stats);
+          setStats(data.stats);
+        } else {
+          console.error('Invalid response format:', data);
+          toast.error('Invalid response from server');
+        }
       } else {
         const errorData = await response.json();
-        console.error('Failed to load dashboard stats:', errorData);
+        console.error('Failed to load dashboard stats:', response.status, errorData);
         
         // If not authenticated, redirect to login
         if (response.status === 401) {
@@ -145,7 +155,7 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Dashboard stats error:', error);
-      toast.error('Network error');
+      toast.error('Network error - cannot connect to database');
     } finally {
       setIsLoading(false);
     }
