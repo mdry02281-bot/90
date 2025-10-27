@@ -111,7 +111,7 @@ server {
         log_not_found off;
     }
 
-    # Rate limiting
-    limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
-    limit_req zone=api_limit burst=20 nodelay;
+    # Apply rate limiting (zone defined in nginx.conf)
+    location /api/ {
+        limit_req zone=api_limit burst=20 nodelay;
 }
