@@ -27,6 +27,7 @@ import {
   Database
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi } from '@/hooks/useApi';
 
 interface DashboardStats {
   users: {
@@ -88,15 +89,36 @@ interface Withdrawal {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
   const [tasksLoading, setTasksLoading] = useState(false);
   const [withdrawalsLoading, setWithdrawalsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Use unified API hook for dashboard stats
+  const { 
+    data: stats, 
+    loading: statsLoading, 
+    error: statsError, 
+    refetch: refetchStats 
+  } = useApi<DashboardStats>('/api/admin/dashboard', {
+    immediate: true,
+    retryOnError: true,
+    maxRetries: 3,
+  });
+
+  // Use unified API hook for pending users
+  const { 
+    data: usersData, 
+    loading: usersLoading, 
+    error: usersError, 
+    refetch: refetchUsers 
+  } = useApi<{ users: User[] }>('/api/admin/users?status=pending', {
+    immediate: true,
+    retryOnError: true,
+  });
 
   useEffect(() => {
     fetchDashboardStats();

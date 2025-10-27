@@ -7,6 +7,7 @@ import path from 'path';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
 import { authMiddleware } from './middleware/auth';
+import { apmMiddleware, healthCheck, metricsEndpoint } from './utils/apmMonitor';
 
 // Import cron jobs
 import './cron';
@@ -65,8 +66,17 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Health check
-app.get('/health', (req, res) => {
+// APM Middleware
+app.use(apmMiddleware);
+
+// Health check with detailed monitoring
+app.get('/health', healthCheck);
+
+// Metrics endpoint for monitoring systems
+app.get('/metrics', metricsEndpoint);
+
+// Basic health check for load balancers
+app.get('/health/basic', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
