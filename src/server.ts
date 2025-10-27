@@ -1,10 +1,11 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
 import path from 'path';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 // Load environment variables
 dotenv.config();
@@ -484,12 +485,25 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'dist')));
+// Debug log for static file directory
+const staticDir = path.resolve(process.cwd(), 'dist');
+console.log('[SERVER] Serving static files from:', staticDir);
+
+// Serve static files from the dist directory
+app.use(express.static(staticDir));
 
 // Catch-all handler for SPA (must be last)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.get('*', (req, res, next) => {
+  const indexPath = path.join(staticDir, 'index.html');
+  console.log('[SERVER] Attempting to serve:', indexPath);
+  
+  // Check if the file exists before sending
+  if (!require('fs').existsSync(indexPath)) {
+    console.error('[SERVER] index.html not found at:', indexPath);
+    return next(new Error('index.html not found'));
+  }
+  
+  res.sendFile(indexPath);
 });
 
 // Error handling middleware

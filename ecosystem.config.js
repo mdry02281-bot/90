@@ -2,16 +2,17 @@ module.exports = {
   apps: [
     {
       name: 'promohive',
-      script: 'dist/index.js',
+      script: './dist/server/index.js',
       instances: 1,
       exec_mode: 'cluster',
       cwd: '/var/www/promohive',
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'production',
+        PORT: 3000
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: process.env.PORT || 3000,
+        PORT: 3000,
         HOST: process.env.HOST || 'srv1052990.hstgr.cloud',
         DATABASE_URL: process.env.DATABASE_URL,
         SUPABASE_URL: process.env.SUPABASE_URL,
