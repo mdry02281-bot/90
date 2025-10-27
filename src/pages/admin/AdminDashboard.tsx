@@ -416,7 +416,7 @@ export default function AdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="dashboard-card-value">{stats?.users?.total ?? 1}</div>
+              <div className="dashboard-card-value">{stats?.users?.total || 0}</div>
               <p className="text-sm text-gray-600 mt-1">
                 Registered users
               </p>
