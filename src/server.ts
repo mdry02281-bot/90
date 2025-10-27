@@ -90,29 +90,45 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// CRITICAL: Health check endpoint - MUST be before any other routes
 app.get('/api/health', async (req, res) => {
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
     
-    res.json({
-      ok: true,
-      db: 'connected',
+    res.status(200).json({
+      status: 'healthy',
       timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
       environment: process.env.NODE_ENV,
-      version: '1.0.0'
+      version: '1.0.0',
+      database: 'connected',
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+      }
     });
   } catch (error) {
-    console.error('[HEALTH] Database connection failed:', error);
-    res.status(500).json({
-      ok: false,
-      db: 'error',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
+    console.error('[HEALTH] Database check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: 'Database connection failed',
+      environment: process.env.NODE_ENV
     });
   }
 });
+
+// API status endpoint
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'PromoHive API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
 
 // Admin dashboard endpoint
 app.get('/api/admin/dashboard', async (req, res) => {
