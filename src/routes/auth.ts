@@ -95,7 +95,6 @@ router.post('/register', asyncHandler(async (req, res) => {
         OR: [
           { id: data.referredBy },
           { username: data.referredBy },
-          { referralCode: data.referredBy },
         ],
       },
     });
