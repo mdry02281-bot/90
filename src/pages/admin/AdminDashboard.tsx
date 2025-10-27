@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,15 +16,11 @@ import {
   Settings,
   BarChart3,
   UserCheck,
-  UserX,
   Wallet,
   Award,
   AlertCircle,
-  Sparkles,
-  Gift,
   Zap,
   Shield,
-  Star,
   Activity,
   Crown,
   Globe,
@@ -63,11 +59,43 @@ interface User {
   createdAt: string;
 }
 
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  reward: number;
+  status: string;
+  createdAt: string;
+  _count?: {
+    userTasks: number;
+    proofs: number;
+  };
+}
+
+interface Withdrawal {
+  id: string;
+  userId: string;
+  amount: number;
+  walletAddress: string;
+  status: string;
+  createdAt: string;
+  user?: {
+    username: string;
+    email: string;
+    fullName: string;
+  };
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
+  const [withdrawalsLoading, setWithdrawalsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -77,22 +105,20 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     console.log('Active tab changed to:', activeTab);
+    if (activeTab === 'tasks') {
+      fetchTasks();
+    } else if (activeTab === 'withdrawals') {
+      fetchPendingWithdrawals();
+    }
   }, [activeTab]);
 
   const fetchDashboardStats = async () => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-      
       const response = await fetch('/api/admin/dashboard', {
-        credentials: 'include',
-        headers,
+        credentials: 'include', // Cookies will be sent automatically
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -118,18 +144,11 @@ export default function AdminDashboard() {
     setUsersLoading(true);
     try {
       console.log('Fetching pending users...');
-      const accessToken = localStorage.getItem('accessToken');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-      
       const response = await fetch('/api/admin/users?status=pending', {
-        credentials: 'include',
-        headers,
+        credentials: 'include', // Cookies will be sent automatically
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       console.log('Pending users response status:', response.status);
       
@@ -160,19 +179,12 @@ export default function AdminDashboard() {
   const handleApproveUser = async (userId: string) => {
     try {
       console.log('Approving user:', userId);
-      const accessToken = localStorage.getItem('accessToken');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-      
       const response = await fetch(`/api/admin/users/${userId}/approve`, {
         method: 'POST',
-        credentials: 'include',
-        headers,
+        credentials: 'include', // Cookies will be sent automatically
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       console.log('Approve response status:', response.status);
@@ -225,6 +237,73 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Create test user network error:', error);
+      toast.error('Network error');
+    }
+  };
+
+  const fetchTasks = async () => {
+    setTasksLoading(true);
+    try {
+      const response = await fetch('/api/admin/tasks', {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(data.tasks || []);
+      } else {
+        toast.error('Failed to load tasks');
+      }
+    } catch (error) {
+      console.error('Failed to load tasks:', error);
+      toast.error('Network error');
+    } finally {
+      setTasksLoading(false);
+    }
+  };
+
+  const fetchPendingWithdrawals = async () => {
+    setWithdrawalsLoading(true);
+    try {
+      const response = await fetch('/api/admin/withdrawals/pending', {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setWithdrawals(data.withdrawals || []);
+      } else {
+        toast.error('Failed to load withdrawals');
+      }
+    } catch (error) {
+      console.error('Failed to load withdrawals:', error);
+      toast.error('Network error');
+    } finally {
+      setWithdrawalsLoading(false);
+    }
+  };
+
+  const handleProcessWithdrawal = async (withdrawalId: string, status: string, txHash?: string) => {
+    try {
+      const response = await fetch(`/api/admin/withdrawals/${withdrawalId}/process`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, txHash }),
+      });
+
+      if (response.ok) {
+        toast.success(`Withdrawal ${status.toLowerCase()} successfully`);
+        fetchPendingWithdrawals();
+        fetchDashboardStats();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to process withdrawal');
+      }
+    } catch (error) {
+      console.error('Failed to process withdrawal:', error);
       toast.error('Network error');
     }
   };
@@ -773,21 +852,51 @@ export default function AdminDashboard() {
                   Task Management
                 </CardTitle>
                 <CardDescription>
-                  Create and manage platform tasks
+                  View and manage all platform tasks
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Target className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Task Management</h3>
-                  <p className="text-gray-600 mb-4">
-                    Create new tasks, manage existing ones, and monitor task performance.
-                  </p>
-                  <Button className="btn-primary hover-glow">
-                    <Target className="h-4 w-4 mr-2" />
-                    Manage Tasks
-                  </Button>
-                </div>
+                {tasksLoading ? (
+                  <div className="text-center py-12">
+                    <div className="spinner mx-auto mb-4" />
+                    <p className="text-gray-600">Loading tasks...</p>
+                  </div>
+                ) : tasks.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Target className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Tasks Found</h3>
+                    <p className="text-gray-600">Create your first task to get started.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {tasks.map((task) => (
+                      <div key={task.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-gray-900">{task.title}</h4>
+                              <Badge variant={task.status === 'ACTIVE' ? 'default' : 'secondary'}>
+                                {task.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span>Type: {task.type}</span>
+                              <span>Reward: ${task.reward}</span>
+                              {task._count && (
+                                <>
+                                  <span>Participants: {task._count.userTasks}</span>
+                                  <span>Proofs: {task._count.proofs}</span>
+                                </>
+                              )}
+                              <span>{new Date(task.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -797,24 +906,68 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Wallet className="h-5 w-5 mr-2 text-brand-blue" />
-                  Withdrawal Management
+                  Pending Withdrawals
                 </CardTitle>
                 <CardDescription>
                   Review and process withdrawal requests
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Wallet className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Withdrawal Management</h3>
-                  <p className="text-gray-600 mb-4">
-                    Review pending withdrawal requests and process payments.
-                  </p>
-                  <Button className="btn-primary hover-glow">
-                    <Wallet className="h-4 w-4 mr-2" />
-                    Manage Withdrawals
-                  </Button>
-                </div>
+                {withdrawalsLoading ? (
+                  <div className="text-center py-12">
+                    <div className="spinner mx-auto mb-4" />
+                    <p className="text-gray-600">Loading withdrawals...</p>
+                  </div>
+                ) : withdrawals.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-400" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Pending Withdrawals</h3>
+                    <p className="text-gray-600">All withdrawals have been processed.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {withdrawals.map((withdrawal) => (
+                      <div key={withdrawal.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            {withdrawal.user && (
+                              <>
+                                <h4 className="font-semibold text-gray-900">{withdrawal.user.fullName}</h4>
+                                <p className="text-sm text-gray-600">{withdrawal.user.email}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Username: {withdrawal.user.username}
+                                </p>
+                              </>
+                            )}
+                            <div className="mt-2 flex items-center gap-4 text-sm">
+                              <span className="font-semibold text-green-600">Amount: ${withdrawal.amount}</span>
+                              <span className="text-gray-600">Wallet: {withdrawal.walletAddress}</span>
+                              <span className="text-gray-500">{new Date(withdrawal.createdAt).toLocaleString()}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              onClick={() => handleProcessWithdrawal(withdrawal.id, 'COMPLETED')}
+                              className="btn-primary"
+                              size="sm"
+                            >
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Approve
+                            </Button>
+                            <Button
+                              onClick={() => handleProcessWithdrawal(withdrawal.id, 'REJECTED')}
+                              variant="destructive"
+                              size="sm"
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Reject
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -837,7 +990,12 @@ export default function AdminDashboard() {
                   <p className="text-gray-600 mb-4">
                     Adjust various platform configurations, such as welcome bonuses, referral rates, and withdrawal limits.
                   </p>
-                  <Button className="btn-primary hover-glow" disabled>
+                  <Button 
+                  className="btn-primary hover-glow"
+                  onClick={() => {
+                    toast.info('Settings panel coming soon!');
+                  }}
+                >
                     <Settings className="h-4 w-4 mr-2" />
                     Configure Settings
                   </Button>

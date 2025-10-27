@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,6 @@ import {
   Users, 
   Trophy, 
   TrendingUp, 
-  ArrowRight, 
   Wallet,
   Activity,
   Target,
@@ -202,39 +201,112 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Wallet Overview - تفصيلي */}
+        <Card className="mb-8 card-interactive animate-slide-up">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Wallet className="h-5 w-5 mr-2 text-brand-blue" />
+              محفظتك الداخلية - Internal Wallet
+            </CardTitle>
+            <CardDescription>
+              عرض تفصيلي لإجمالي أرباحك من جميع المصادر
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Available Balance */}
+              <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">الرصيد المتاح</span>
+                  <Wallet className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold text-green-700">${wallet.balance.toFixed(2)}</div>
+                <p className="text-xs text-gray-600 mt-1">Available for withdrawal</p>
+              </div>
+
+              {/* Pending Balance */}
+              <div className="p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">قيد الانتظار</span>
+                  <Activity className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div className="text-2xl font-bold text-yellow-700">${wallet.pendingBalance.toFixed(2)}</div>
+                <p className="text-xs text-gray-600 mt-1">Pending approval</p>
+              </div>
+
+              {/* Total Earned */}
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">إجمالي الأرباح</span>
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-blue-700">${wallet.totalEarned.toFixed(2)}</div>
+                <p className="text-xs text-gray-600 mt-1">Lifetime earnings</p>
+              </div>
+
+              {/* Total Withdrawn */}
+              <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">إجمالي المسحوبات</span>
+                  <DollarSign className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="text-2xl font-bold text-purple-700">${wallet.totalWithdrawn.toFixed(2)}</div>
+                <p className="text-xs text-gray-600 mt-1">Total withdrawn</p>
+              </div>
+            </div>
+
+            {/* Earnings Breakdown */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-4">تفاصيل الأرباح - Earnings Breakdown</h3>
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      <Target className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">من المهام المقبولة</p>
+                      <p className="text-xs text-gray-500">Approved Tasks</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-green-600">${stats.totalReferralBonus || 0}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                      <Users className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">من الدعوات والتحويلات</p>
+                      <p className="text-xs text-gray-500">Referrals & Bonuses</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-purple-600">${stats.totalReferralBonus || 0}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                      <Sparkles className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">عجلة الحظ والبونصات</p>
+                      <p className="text-xs text-gray-500">Spins & Bonuses</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-yellow-600">
+                    ${(wallet.totalEarned - (stats.totalReferralBonus || 0)).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="dashboard-card animate-scale-in hover-lift">
-            <CardHeader className="dashboard-card-header">
-              <CardTitle className="dashboard-card-title">Total Balance</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center float-animation">
-                <Wallet className="h-6 w-6 text-green-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="dashboard-card-value">${wallet.balance.toFixed(2)}</div>
-              <p className="text-sm text-gray-600 mt-1">
-                Available for withdrawal
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
-            <CardHeader className="dashboard-card-header">
-              <CardTitle className="dashboard-card-title">Total Earned</CardTitle>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center float-animation">
-                <DollarSign className="h-6 w-6 text-blue-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="dashboard-card-value">${wallet.totalEarned.toFixed(2)}</div>
-              <p className="text-sm text-gray-600 mt-1">
-                Lifetime earnings
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
             <CardHeader className="dashboard-card-header">
               <CardTitle className="dashboard-card-title">Referrals</CardTitle>
               <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center float-animation">
@@ -249,7 +321,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.3s' }}>
+          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.1s' }}>
             <CardHeader className="dashboard-card-header">
               <CardTitle className="dashboard-card-title">Tasks Completed</CardTitle>
               <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center float-animation">
@@ -260,6 +332,36 @@ export default function Dashboard() {
               <div className="dashboard-card-value">{stats.totalTasks}</div>
               <p className="text-sm text-gray-600 mt-1">
                 Tasks completed
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.2s' }}>
+            <CardHeader className="dashboard-card-header">
+              <CardTitle className="dashboard-card-title">Transactions</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center float-animation">
+                <Activity className="h-6 w-6 text-blue-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="dashboard-card-value">{stats.totalTransactions}</div>
+              <p className="text-sm text-gray-600 mt-1">
+                Total transactions
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="dashboard-card animate-scale-in hover-lift" style={{ animationDelay: '0.3s' }}>
+            <CardHeader className="dashboard-card-header">
+              <CardTitle className="dashboard-card-title">Withdrawals</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center float-animation">
+                <DollarSign className="h-6 w-6 text-green-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="dashboard-card-value">{stats.totalWithdrawals}</div>
+              <p className="text-sm text-gray-600 mt-1">
+                Total withdrawals
               </p>
             </CardContent>
           </Card>

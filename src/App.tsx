@@ -191,21 +191,45 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+    // Fetch user from API instead of localStorage
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && data.user) {
+            setUser(data.user)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-    setLoading(false)
+    
+    fetchCurrentUser()
   }, [])
 
   const login = (userData: User) => {
     setUser(userData)
-    localStorage.setItem('user', JSON.stringify(userData))
+    // No longer storing in localStorage - data comes from API
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
     setUser(null)
-    localStorage.removeItem('user')
+    window.location.href = '/login'
   }
 
   return (
@@ -405,7 +429,7 @@ function Login() {
   })
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     
@@ -420,6 +444,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important: sends cookies
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -429,13 +454,8 @@ function Login() {
       const data = await response.json()
       
       if (response.ok) {
-        // Store tokens
-        if (data.accessToken) {
-          localStorage.setItem('accessToken', data.accessToken)
-        }
-        if (data.refreshToken) {
-          localStorage.setItem('refreshToken', data.refreshToken)
-        }
+        // No longer storing tokens in localStorage
+        // Cookies are set automatically by the server
         
         // Login with user data
         login({
@@ -465,7 +485,7 @@ function Login() {
     }
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -584,7 +604,7 @@ function Register() {
     }, 2000)
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -792,7 +812,7 @@ function Profile() {
     })
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -2601,7 +2621,7 @@ function Withdrawals() {
     setFormData({ amount: '', walletAddress: '', network: 'USDT' })
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value

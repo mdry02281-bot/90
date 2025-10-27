@@ -1,0 +1,23 @@
+# خطوات التحقق من البيانات الحقيقية:
+
+1. افتح https://globalpromonetwork.store/admin
+
+2. اضغط F12 → Console
+
+3. ابحث عن:
+   - "Dashboard Stats Response:"
+   - "Pending users response data:"
+
+4. ارجع إلى Network tab:
+   - ابحث عن "dashboard"
+   - اضغط على الطلب
+   - اذهب إلى Response
+   - انسخ المحتوى وأرسله لي
+
+5. أو أرسل لي:
+   - ما يظهر في لوحة الأدمن (أرقام)
+   - هل تظهر أزرار "Approve" للمستخدمين المعلقة؟
+
+سيظهر في Console شيئ كهذا:
+   Dashboard Stats Response: { success: true, stats: { users: { total: 4, pending: 3, ... } } }
+

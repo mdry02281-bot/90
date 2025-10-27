@@ -6,6 +6,8 @@ import { generateTokenPair, verifyRefreshToken } from '../utils/jwt';
 import { sendWelcomeEmail, sendApprovalEmail, sendMagicLinkEmail } from '../services/email';
 import { logger } from '../utils/logger';
 import { asyncHandler } from '../middleware/errorHandler';
+import { authMiddleware } from '../middleware/auth';
+import { AuthenticatedRequest } from '../middleware/auth';
 import crypto from 'crypto';
 
 const router = express.Router();
@@ -18,7 +20,7 @@ const registerSchema = z.object({
   email: z.string().email(),
   fullName: z.string().min(2).max(100),
   password: z.string().min(8),
-  gender: z.enum(['male', 'female', 'other']).optional(),
+  gender: z.string().optional(),
   birthdate: z.string().optional(),
   referredBy: z.string().optional(),
 });
@@ -86,10 +88,16 @@ router.post('/register', asyncHandler(async (req, res) => {
     },
   });
 
-  // Handle referral if exists
+  // Handle referral if exists - search by username, email, or ID
   if (data.referredBy) {
-    const referrer = await prisma.user.findUnique({
-      where: { id: data.referredBy },
+    const referrer = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { id: data.referredBy },
+          { username: data.referredBy },
+          { referralCode: data.referredBy },
+        ],
+      },
     });
 
     if (referrer) {
@@ -101,6 +109,7 @@ router.post('/register', asyncHandler(async (req, res) => {
           bonus: 0,
         },
       });
+      logger.info(`Referral created: ${user.email} referred by ${referrer.email}`);
     }
   }
 
@@ -406,6 +415,34 @@ router.post('/change-password', asyncHandler(async (req, res) => {
   logger.info(`Password changed for user: ${user.email}`);
 
   res.json({ success: true, message: 'Password changed successfully' });
+}));
+
+// Get current user
+router.get('/me', authMiddleware, asyncHandler(async (req: AuthenticatedRequest, res) => {
+  const userId = req.user!.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { wallet: true },
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  res.json({
+    success: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      level: user.level,
+      isApproved: user.isApproved,
+      balance: user.wallet?.balance || 0,
+    },
+  });
 }));
 
 export default router;

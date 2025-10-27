@@ -8,7 +8,7 @@ import { AuthenticatedRequest } from '../middleware/auth';
 const router = express.Router();
 
 // Get current user profile
-router.get('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/profile', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
 
   const user = await prisma.user.findUnique({
@@ -78,14 +78,14 @@ router.get('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
   });
 }));
 
-// Update user profile
+// Update user profile  
 const updateProfileSchema = z.object({
   fullName: z.string().min(2).max(100).optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   birthdate: z.string().optional(),
 });
 
-router.put('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.put('/profile', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
   const data = updateProfileSchema.parse(req.body);
 
@@ -118,7 +118,7 @@ router.put('/profile', asyncHandler(async (req: AuthenticatedRequest, res) => {
 }));
 
 // Get user wallet
-router.get('/wallet', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/wallet', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
 
   const wallet = await prisma.wallet.findUnique({
@@ -136,7 +136,7 @@ router.get('/wallet', asyncHandler(async (req: AuthenticatedRequest, res) => {
 }));
 
 // Get user transactions
-router.get('/transactions', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/transactions', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
@@ -167,7 +167,7 @@ router.get('/transactions', asyncHandler(async (req: AuthenticatedRequest, res) 
 }));
 
 // Get user tasks
-router.get('/tasks', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/tasks', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
@@ -202,7 +202,7 @@ router.get('/tasks', asyncHandler(async (req: AuthenticatedRequest, res) => {
 }));
 
 // Get user referrals
-router.get('/referrals', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/referrals', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
 
   const referrals = await prisma.referral.findMany({
@@ -245,7 +245,7 @@ router.get('/referrals', asyncHandler(async (req: AuthenticatedRequest, res) => 
 }));
 
 // Get user withdrawals
-router.get('/withdrawals', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/withdrawals', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
@@ -276,7 +276,7 @@ router.get('/withdrawals', asyncHandler(async (req: AuthenticatedRequest, res) =
 }));
 
 // Get user level requests
-router.get('/level-requests', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/level-requests', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
 
   const levelRequests = await prisma.levelRequest.findMany({
@@ -296,7 +296,7 @@ const levelUpgradeSchema = z.object({
   proofUrl: z.string().url().optional(),
 });
 
-router.post('/level-upgrade', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.post('/level-upgrade', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
   const data = levelUpgradeSchema.parse(req.body);
 
@@ -365,7 +365,7 @@ router.post('/level-upgrade', asyncHandler(async (req: AuthenticatedRequest, res
 }));
 
 // Get dashboard stats
-router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => {
+router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res: express.Response) => {
   const userId = req.user!.id;
 
   const [
@@ -422,7 +422,7 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
 
   res.json({
     success: true,
-    dashboard: {
+    data: {
       user: {
         id: user.id,
         username: user.username,
@@ -433,14 +433,19 @@ router.get('/dashboard', asyncHandler(async (req: AuthenticatedRequest, res) => 
         referralCode: user.id,
         createdAt: user.createdAt,
       },
-      wallet,
+      wallet: {
+        balance: wallet.balance.toNumber(),
+        pendingBalance: wallet.pendingBalance.toNumber(),
+        totalEarned: wallet.totalEarned.toNumber(),
+        totalWithdrawn: wallet.totalWithdrawn.toNumber(),
+      },
       stats: {
         totalTransactions: user._count.transactions,
         totalTasks: user._count.tasks,
         totalReferrals: user._count.referrals,
         totalWithdrawals: user._count.withdrawals,
-        totalReferralBonus: referralStats._sum.bonus || 0,
-        totalWithdrawn: withdrawalStats._sum.amount || 0,
+        totalReferralBonus: referralStats._sum.bonus?.toNumber() || 0,
+        totalWithdrawn: withdrawalStats._sum.amount?.toNumber() || 0,
       },
       recentTransactions,
       recentTasks,
